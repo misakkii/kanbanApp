@@ -4125,6 +4125,10 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
 
 
 
@@ -4145,7 +4149,8 @@ __webpack_require__.r(__webpack_exports__);
   data: function data() {
     return {
       form: this.$inertia.form({
-        name: '',
+        last_name: '',
+        first_name: '',
         email: '',
         password: '',
         password_confirmation: '',
@@ -5349,6 +5354,11 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
 
 
 
@@ -5371,7 +5381,8 @@ __webpack_require__.r(__webpack_exports__);
     return {
       form: this.$inertia.form({
         _method: 'PUT',
-        name: this.user.name,
+        last_name: this.user.last_name,
+        first_name: this.user.first_name,
         email: this.user.email,
         photo: null
       }),
@@ -34426,23 +34437,49 @@ var render = function () {
           _c(
             "div",
             [
-              _c("jet-label", { attrs: { for: "name", value: "Name" } }),
+              _c("jet-label", { attrs: { for: "last_name", value: "名字" } }),
               _vm._v(" "),
               _c("jet-input", {
                 staticClass: "mt-1 block w-full",
                 attrs: {
-                  id: "name",
+                  id: "last_name",
                   type: "text",
                   required: "",
                   autofocus: "",
-                  autocomplete: "name",
+                  autocomplete: "first_name",
                 },
                 model: {
-                  value: _vm.form.name,
+                  value: _vm.form.last_name,
                   callback: function ($$v) {
-                    _vm.$set(_vm.form, "name", $$v)
+                    _vm.$set(_vm.form, "last_name", $$v)
                   },
-                  expression: "form.name",
+                  expression: "form.last_name",
+                },
+              }),
+            ],
+            1
+          ),
+          _vm._v(" "),
+          _c(
+            "div",
+            [
+              _c("jet-label", { attrs: { for: "first_name", value: "名前" } }),
+              _vm._v(" "),
+              _c("jet-input", {
+                staticClass: "mt-1 block w-full",
+                attrs: {
+                  id: "first_name",
+                  type: "text",
+                  required: "",
+                  autofocus: "",
+                  autocomplete: "first_name",
+                },
+                model: {
+                  value: _vm.form.first_name,
+                  callback: function ($$v) {
+                    _vm.$set(_vm.form, "first_name", $$v)
+                  },
+                  expression: "form.first_name",
                 },
               }),
             ],
@@ -34453,7 +34490,9 @@ var render = function () {
             "div",
             { staticClass: "mt-4" },
             [
-              _c("jet-label", { attrs: { for: "email", value: "Email" } }),
+              _c("jet-label", {
+                attrs: { for: "email", value: "メールアドレス" },
+              }),
               _vm._v(" "),
               _c("jet-input", {
                 staticClass: "mt-1 block w-full",
@@ -34475,7 +34514,7 @@ var render = function () {
             { staticClass: "mt-4" },
             [
               _c("jet-label", {
-                attrs: { for: "password", value: "Password" },
+                attrs: { for: "password", value: "パスワード" },
               }),
               _vm._v(" "),
               _c("jet-input", {
@@ -34505,7 +34544,7 @@ var render = function () {
               _c("jet-label", {
                 attrs: {
                   for: "password_confirmation",
-                  value: "Confirm Password",
+                  value: "パスワードの確認",
                 },
               }),
               _vm._v(" "),
@@ -36493,23 +36532,27 @@ var render = function () {
               "div",
               { staticClass: "col-span-6 sm:col-span-4" },
               [
-                _c("jet-label", { attrs: { for: "name", value: "Name" } }),
+                _c("jet-label", { attrs: { for: "last_name", value: "名字" } }),
                 _vm._v(" "),
                 _c("jet-input", {
                   staticClass: "mt-1 block w-full",
-                  attrs: { id: "name", type: "text", autocomplete: "name" },
+                  attrs: {
+                    id: "last_name",
+                    type: "text",
+                    autocomplete: "last_name",
+                  },
                   model: {
-                    value: _vm.form.name,
+                    value: _vm.form.last_name,
                     callback: function ($$v) {
-                      _vm.$set(_vm.form, "name", $$v)
+                      _vm.$set(_vm.form, "last_name", $$v)
                     },
-                    expression: "form.name",
+                    expression: "form.last_name",
                   },
                 }),
                 _vm._v(" "),
                 _c("jet-input-error", {
                   staticClass: "mt-2",
-                  attrs: { message: _vm.form.errors.name },
+                  attrs: { message: _vm.form.errors.last_name },
                 }),
               ],
               1
@@ -36519,7 +36562,41 @@ var render = function () {
               "div",
               { staticClass: "col-span-6 sm:col-span-4" },
               [
-                _c("jet-label", { attrs: { for: "email", value: "Email" } }),
+                _c("jet-label", {
+                  attrs: { for: "first_name", value: "名前" },
+                }),
+                _vm._v(" "),
+                _c("jet-input", {
+                  staticClass: "mt-1 block w-full",
+                  attrs: {
+                    id: "first_name",
+                    type: "text",
+                    autocomplete: "first_name",
+                  },
+                  model: {
+                    value: _vm.form.first_name,
+                    callback: function ($$v) {
+                      _vm.$set(_vm.form, "first_name", $$v)
+                    },
+                    expression: "form.first_name",
+                  },
+                }),
+                _vm._v(" "),
+                _c("jet-input-error", {
+                  staticClass: "mt-2",
+                  attrs: { message: _vm.form.errors._first_name },
+                }),
+              ],
+              1
+            ),
+            _vm._v(" "),
+            _c(
+              "div",
+              { staticClass: "col-span-6 sm:col-span-4" },
+              [
+                _c("jet-label", {
+                  attrs: { for: "email", value: "メールアドレス" },
+                }),
                 _vm._v(" "),
                 _c("jet-input", {
                   staticClass: "mt-1 block w-full",
