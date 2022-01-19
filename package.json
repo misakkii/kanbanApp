@@ -23,12 +23,14 @@
         "portal-vue": "^2.1.7",
         "postcss": "^8.1.14",
         "postcss-import": "^12.0.1",
-        "sass": "^1.49.0",
+        "sass": "~1.32",
         "sass-loader": "^12.4.0",
         "tailwindcss": "^2.0.1",
         "vue": "^2.5.17",
         "vue-loader": "^15.9.6",
         "vue-template-compiler": "^2.6.10",
-        "vuetify": "^2.6.2"
+        "vuetify": "^2.6.2",
+        "vuetify-loader": "^1.7.3",
+        "vuetifyjs-mix-extension": "^0.0.20"
     }
 }
