@@ -1,5 +1,6 @@
 <template>
-    <app-layout>
+
+    <vuetify-layout>
         <template #header>
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
                 Dashboard
@@ -13,17 +14,39 @@
                 </div>
             </div>
         </div>
-    </app-layout>
+    </vuetify-layout>
+
 </template>
 
 <script>
+    import { defineComponent, reactive } from '@vue/composition-api'
     import AppLayout from '@/Layouts/AppLayout'
+    import VuetifyLayout from '@/Layouts/VuetifyLayout'
     import Welcome from '@/Jetstream/Welcome'
+    import { Link } from '@inertiajs/inertia-vue'
+    import Top from './Top.vue'
 
-    export default {
+    export default defineComponent({
         components: {
             AppLayout,
+            VuetifyLayout,
+            Top,
+            Link,
             Welcome,
         },
-    }
+        setup() {
+            const data = reactive({
+                mini: true,
+                nav_list:[]
+            })
+            const logout =()=> {
+                this.$inertia.post(route('logout'));
+                this.$inirtia.get(route('login'));
+            }
+            return {
+                data,
+                logout,
+            }
+        },
+    })
 </script>

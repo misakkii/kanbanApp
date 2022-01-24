@@ -8,22 +8,26 @@
 
         <form @submit.prevent="submit">
             <div>
-                <jet-label for="name" value="Name" />
-                <jet-input id="name" type="text" class="mt-1 block w-full" v-model="form.name" required autofocus autocomplete="name" />
+                <jet-label for="last_name" value="名字" />
+                <jet-input id="last_name" type="text" class="mt-1 block w-full" v-model="form.last_name" required autofocus autocomplete="first_name" />
+            </div>
+            <div>
+                <jet-label for="first_name" value="名前" />
+                <jet-input id="first_name" type="text" class="mt-1 block w-full" v-model="form.first_name" required autofocus autocomplete="first_name" />
             </div>
 
             <div class="mt-4">
-                <jet-label for="email" value="Email" />
+                <jet-label for="email" value="メールアドレス" />
                 <jet-input id="email" type="email" class="mt-1 block w-full" v-model="form.email" required />
             </div>
 
             <div class="mt-4">
-                <jet-label for="password" value="Password" />
+                <jet-label for="password" value="パスワード" />
                 <jet-input id="password" type="password" class="mt-1 block w-full" v-model="form.password" required autocomplete="new-password" />
             </div>
 
             <div class="mt-4">
-                <jet-label for="password_confirmation" value="Confirm Password" />
+                <jet-label for="password_confirmation" value="パスワードの確認" />
                 <jet-input id="password_confirmation" type="password" class="mt-1 block w-full" v-model="form.password_confirmation" required autocomplete="new-password" />
             </div>
 
@@ -75,7 +79,8 @@
         data() {
             return {
                 form: this.$inertia.form({
-                    name: '',
+                    last_name: '',
+                    first_name: '',
                     email: '',
                     password: '',
                     password_confirmation: '',
