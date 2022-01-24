@@ -11,7 +11,7 @@ class Project extends Model
 
     protected $fillable = [
         'title',
-        'deadline_date',
+        'due_date',
         'color',
         'deleted_at'
     ];

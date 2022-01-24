@@ -12,7 +12,7 @@ class Task extends Model
     protected $fillable = [
         'project_id',
         'title',
-        'deadline_date',
+        'due_date',
         'created_by',
         'deleted_at'
     ];

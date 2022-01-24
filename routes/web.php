@@ -2,6 +2,7 @@
 
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\{ ProjectController };
 use Inertia\Inertia;
 
 /*
@@ -24,6 +25,15 @@ Route::get('/', function () {
     ]);
 });
 
-Route::middleware(['auth:sanctum', 'verified'])->get('/dashboard', function () {
-    return Inertia::render('Dashboard');
-})->name('dashboard');
+Route::middleware(['auth:sanctum', 'verified'])->group(function() {
+    Route::get('/dashboard', function() {
+        return Inertia::render('Dashboard');
+    })->name('dashboard');
+
+    Route::get('/user/task', function() {
+        return Inertia::render('Task');
+    })->name('user.task');
+
+    Route::get('/project', [ProjectController::class, 'index'])->name('project.index');
+    Route::post('/project/store', [ProjectController::class, 'store'])->name('project.store');
+});
