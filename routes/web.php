@@ -35,5 +35,11 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function() {
     })->name('user.task');
 
     Route::get('/project', [ProjectController::class, 'index'])->name('project.index');
+    Route::get('/project/completion', [ProjectController::class, 'createCompletion'])->name('project.create.completion');
+    Route::get('/project/delete', [ProjectController::class, 'createDelete'])->name('project.create.delete');
+
     Route::post('/project/store', [ProjectController::class, 'store'])->name('project.store');
+    Route::get('/project/edit', [ProjectController::class, 'edit'])->name('project.edit');
+    Route::post('/project/update', [ProjectController::class, 'update'])->name('project.update');
+    Route::post('/project/destroy', [ProjectController::class, 'delete'])->name('project.destroy');
 });

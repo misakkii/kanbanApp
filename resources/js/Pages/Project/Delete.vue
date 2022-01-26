@@ -14,10 +14,6 @@
                     <template v-slot:top>
                         <v-toolbar flat>
                             <v-toolbar-title>プロジェクト一覧</v-toolbar-title>
-
-                            <v-spacer></v-spacer>
-
-                            <v-btn @click="add_drawer = !add_drawer" color="primary">New Project</v-btn>
                         </v-toolbar>
                     </template>
                 </v-data-table>
@@ -29,7 +25,6 @@
 import { defineComponent, computed } from '@vue/composition-api'
 import Layout from '@/Layouts/VuetifyLayout.vue'
 import { useStore } from '@/store/index'
-import { Inertia } from '@inertiajs/inertia'
 
 export default defineComponent({
     layout: Layout,

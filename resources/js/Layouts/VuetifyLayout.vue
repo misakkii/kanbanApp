@@ -33,17 +33,6 @@
             </v-list>
 
             <v-list nav dense>
-                <v-list-item link href="http://localhost/user/task">
-                    <v-list-item-icon>
-                        <v-icon>mdi-account</v-icon>
-                    </v-list-item-icon>
-                    <v-list-item-content>
-                        タスク
-                    </v-list-item-content>
-                </v-list-item>
-            </v-list>
-
-            <v-list nav dense>
                 <v-list-group
                     no-action
                     v-for="nav_list in data.nav_lists" :key="nav_list.name"
@@ -149,6 +138,29 @@
                 mini: true,
                 nav_lists: [
                     {
+                        name:"全体",
+                        icon: "mdi-account-multiple-check",
+                        Link: "#"
+
+                    },
+                    {
+                        name: "タスク",
+                        icon: "mdi-account",
+                        link: "",
+                        lists: [
+                            {
+                                name: "一覧",
+                                link: "#",
+                                link_name: "project",
+                            },
+                            {
+                                name: "完了一覧",
+                                link: "#",
+                                link_name: "project.completion",
+                            },
+                        ],
+                    },
+                    {
                         name: "プロジェクト",
                         icon: "mdi-file-multiple",
                         link: "",
@@ -157,6 +169,16 @@
                                 name: "一覧",
                                 link: "/project",
                                 link_name: "project",
+                            },
+                            {
+                                name: "完了一覧",
+                                link: "/project/completion",
+                                link_name: "project.completion",
+                            },
+                            {
+                                name: "削除一覧",
+                                link: "/project/delete",
+                                link_name: "project.completion",
                             },
                         ],
                     },

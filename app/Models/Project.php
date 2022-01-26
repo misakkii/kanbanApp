@@ -10,10 +10,12 @@ class Project extends Model
     use HasFactory;
 
     protected $fillable = [
+        'id',
         'title',
         'due_date',
         'color',
-        'deleted_at'
+        'completed_at',
+        'deleted_at',
     ];
 
     public function tasks()

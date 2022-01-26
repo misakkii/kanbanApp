@@ -19,6 +19,7 @@ class CreateProjectsTable extends Migration
             $table->date('due_date')->nullable();
             $table->string('color')->default('');
             $table->timestamps();
+            $table->dateTime('completed_at')->nullable;
             $table->dateTime('deleted_at')->nullable;
         });
     }
