@@ -167,17 +167,17 @@
                         lists: [
                             {
                                 name: "一覧",
-                                link: "/project",
+                                link: "/project/list",
                                 link_name: "project",
                             },
                             {
                                 name: "完了一覧",
-                                link: "/project/completion",
+                                link: "/project/list/completion",
                                 link_name: "project.completion",
                             },
                             {
                                 name: "削除一覧",
-                                link: "/project/delete",
+                                link: "/project/list/delete",
                                 link_name: "project.completion",
                             },
                         ],

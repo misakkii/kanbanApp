@@ -43,7 +43,10 @@ export default defineComponent({
 
         const add_drawer = computed({
             get: ()=> store.getters['project/add_drawer'],
-            set: (newValue)=> store.commit('project/add_drawer_op', newValue)
+            set: (newValue)=> {
+                store.commit('project/add_drawer_op', newValue)
+                store.commit('project/title', "")
+            }
         })
         const edit_drawer = computed({
             get: ()=>store.getters['project/add_drawer'],

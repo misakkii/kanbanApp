@@ -16,7 +16,7 @@ class ProjectController extends Controller
      */
     public function index()
     {
-        return Inertia::render('Project/Index', [
+        return Inertia::render('Project/List/Index', [
             'items' => fn() => Project::whereNull(['deleted_at', 'completed_at'])->get()
         ]);
     }
@@ -28,7 +28,7 @@ class ProjectController extends Controller
      */
     public function createCompletion()
     {
-        return Inertia::render('Project/Completion', [
+        return Inertia::render('Project/List/Completion', [
             'items' => fn() => Project::whereNotNull('completed_at')->get()
         ]);
     }
@@ -40,7 +40,7 @@ class ProjectController extends Controller
      */
     public function createDelete()
     {
-        return Inertia::render('Project/Delete', [
+        return Inertia::render('Project/List/Delete', [
             'items' => fn() => Project::whereNotNull('deleted_at')->get()
         ]);
     }
@@ -95,9 +95,7 @@ class ProjectController extends Controller
      */
     public function edit(Request $request)
     {
-        return Inertia::share('project',
-            fn(Request $request) => Inertia::lazy(fn() => Project::find($request->id))
-        );
+        //
     }
 
     /**
@@ -116,7 +114,7 @@ class ProjectController extends Controller
             'due_date' => 'nullable | date'
         ])->validateWithBag('projectUpdate');
 
-        $project = project::where('id', $request->id)->update([
+        $project = Project::where('id', $request->id)->update([
             'title' => $request->title,
             'due_date' => $request->due_date,
         ]);
@@ -134,11 +132,14 @@ class ProjectController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Project  $project
+     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Project $project)
+    public function destroy(Request $request)
     {
-        //
+        $project = Project::destroy($request->id);
+        // $project = Project::where('id', $request->id)->delete();
+
+        return redirect()->route('project.index', $parameters = [], $status = 303, $headers = []);
     }
 }

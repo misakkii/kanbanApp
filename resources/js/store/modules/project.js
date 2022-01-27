@@ -1,7 +1,11 @@
 import { Inertia } from '@inertiajs/inertia'
 
 const state = {
-    data: {},
+    data: {
+        id: null,
+        title: "",
+        due_date: null,
+    },
     id: null,
     title: "",
     due_date: null,
@@ -9,6 +13,7 @@ const state = {
     deleted_at: "値取れてる？",
     add_drawer: false,
     edit_drawer: false,
+    err_msg: {},
 }
 const getters = {
     // 操作系
@@ -41,13 +46,42 @@ const mutations = {
     due_date(state, newValue) {
         state.due_date = newValue
     },
+    err_msg(state, newValue) {
+        state.err_msg = newValue
+    }
 
 }
 const actions = {
-    update({ commit }, newUpdate) {
-        Inertia.post('/project/update',
-        )
-    }
+    store({ commit }) {
+        Inertia.post("/project/store", {
+            title: state.title,
+            due_date: state.due_date,
+        }).then(res => {
+        }).catch(err => {
+            const err_msg = err.response.data
+            commit('err_msg', err_msg)
+        })
+    },
+    update({ commit }) {
+        Inertia.post('/project/update', {
+            id: state.id,
+            title: state.title,
+            due_date: state.due_date,
+        }).then(res => {
+        }).catch(err => {
+            const err_msg = err.response.data
+            commit('err_msg', err_msg)
+        })
+    },
+    destroy({ commit }) {
+        Inertia.post('/project/destroy', {
+            id: state.id
+        }).then(res => {
+        }).catch(err => {
+            const err_msg = err.response.data
+            commit('err_msg', err_msg)
+        })
+    },
 }
 
 export default {

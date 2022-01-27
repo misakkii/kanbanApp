@@ -11,13 +11,14 @@
                     <v-list-item-title>
                         プロジェクトの変更
                     </v-list-item-title>
-                    <v-text-field label="プロジェクト名" v-model="form.title"></v-text-field>
-                    <v-text-field label="YYYY-MM-DD" v-model="due_date">
+                    <v-text-field label="プロジェクト名" v-model="edit.title"></v-text-field>
+                    <v-text-field readonly label="YYYY-MM-DD" v-model="edit.due_date">
                         <template v-slot:append-outer>
-                            <date-picker v-model="due_date"/>
+                            <date-picker v-model="edit.due_date"/>
                         </template>
                     </v-text-field>
                     <v-btn color="primary" @click="update">更新</v-btn>
+                    <v-btn color="red darken-1" dark @click="destroy">削除</v-btn>
 
                 </v-list-item-content>
 
@@ -39,44 +40,40 @@ export default defineComponent({
     setup() {
         const store = useStore()
 
-        const form = reactive({
-            id : computed(()=> store.getters['project/id']),
-            title: "",
-            due_date: computed(()=> store.getters['project/due_date']),
-        })
-
-        const id = computed({
-            get: ()=> store.getters['project/id'],
-            set: ()=> store.commit('project/id')
-        })
-
-        const title = computed({
-            get: ()=> store.getters['project/title'],
-            set: (value)=> store.commit('project/title', value)
-        })
-
-        const due_date = computed({
-            get: ()=> store.getters['project/due_date'],
-            set: (value)=> store.commit('project/due_date', value)
+        const edit = reactive({
+            id : computed({
+                get: ()=> store.getters['project/id'],
+                set: (val)=> store.commit('project/id', val)
+            }),
+            title: computed({
+                get: ()=> store.getters['project/title'],
+                set: (val)=> store.commit('project/title', val)
+            }),
+            due_date: computed({
+                get: ()=> store.getters['project/due_date'],
+                set: (val)=> store.commit('project/due_date', val)
+            }),
         })
 
         const drawer = computed({
             get: () => store.getters['project/edit_drawer'],
-            set: () => store.commit('project/edit_drawer_op')
+            set: (val) => store.commit('project/edit_drawer_op', val)
         })
 
         const update =()=> {
-            Inertia.post('/project/update', form);
-            form.title = ""
+            store.dispatch('project/update')
+            drawer.value = false
+        }
+        const destroy = ()=> {
+            store.dispatch('project/destroy')
+            drawer.value = false
         }
 
         return {
             drawer,
-            id,
-            title,
-            due_date,
-            form,
+            edit,
             update,
+            destroy,
         }
     },
 })

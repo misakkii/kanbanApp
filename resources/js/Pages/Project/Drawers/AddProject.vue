@@ -40,27 +40,27 @@ export default defineComponent({
         const store = useStore()
 
         const create = reactive({
-            title: "",
-            due_date: computed({ get: ()=> store.getters['project/due_date'] }),
+            title: computed({
+                get: ()=> store.getters['project/title'],
+                set: (val)=> store.commit('project/title', val) ,
+            }),
+            due_date: computed({
+                get: ()=> store.getters['project/due_date'],
+                set: (val)=> store.commit('project/due_date', val),
+            }),
         })
 
         const drawer = computed({
             get: () => store.getters['project/add_drawer'],
-            set: () => {
-                store.commit('project/add_drawer_op')
-                create.title = ""
+            set: (val) => {
+                store.commit('project/add_drawer_op', val)
+                // store.commit('project/title', "")
                 store.commit('project/due_date', null)
             }
         })
-        const save =() => {
-            let title = create.title
-            let due_date = create.due_date
-            Inertia.post("/project/store", {
-                title,
-                due_date,
-            });
-            store.commit('project/add_drawer_op', false)
-            console.log({title, due_date})
+        const save = ()=> {
+            store.dispatch('project/store')
+            drawer.value = false
         }
 
         return {
