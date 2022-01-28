@@ -33,6 +33,7 @@
         "vuetify": "^2.6.2",
         "vuetify-loader": "^1.7.3",
         "vuetifyjs-mix-extension": "^0.0.20",
-        "vuex": "^3.6.2"
+        "vuex": "^3.6.2",
+        "vuex-persistedstate": "^3.2.1"
     }
 }

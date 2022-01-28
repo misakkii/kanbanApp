@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\{ Project, User };
+
 
 class Task extends Model
 {
@@ -14,8 +16,13 @@ class Task extends Model
         'title',
         'due_date',
         'created_by',
-        'deleted_at'
+        'deleted_at',
     ];
+
+    public function scopeJoinProjectName($query)
+    {
+        // return $query->join
+    }
 
     public function users()
     {
