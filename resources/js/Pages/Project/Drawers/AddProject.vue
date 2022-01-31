@@ -60,8 +60,15 @@ export default defineComponent({
         })
 
         const save = ()=> {
-            store.dispatch('project/store')
-            drawer.value = false
+            Inertia.post("/project/store", {
+                project_name: create.project_name,
+                due_date: create.due_date,
+            }).then(res => {
+                drawer.value = false
+            }).catch(err => {
+                const err_msg = err.response.data
+                commit('err_msg', err_msg)
+            })
         }
 
         return {

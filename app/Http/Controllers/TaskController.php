@@ -22,15 +22,6 @@ class TaskController extends Controller
     public function index()
     {
         //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
         // $tasks = Task::with('projects')->get();
         $projects = Project::select('id', 'project_name')->get();
         $user = User::find(Auth::id())->select('id')->get();
@@ -45,6 +36,15 @@ class TaskController extends Controller
             'projects' => fn() => $projects,
             'auth' => $user
         ]);
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create()
+    {
     }
 
     /**
@@ -109,7 +109,7 @@ class TaskController extends Controller
             'created_by' => $request->created_by,
         ]);
 
-        return redirect()->route('task.create', $parameters = [], $status = 303, $headers = []);
+        return redirect()->route('task.index', $parameters = [], $status = 303, $headers = []);
     }
 
     /**
@@ -165,17 +165,20 @@ class TaskController extends Controller
         // }
         //     DB::commit();
 
-        return redirect()->route('task.create', $parameters = [], $status = 303, $headers = []);
+        return redirect()->route('task.index', $parameters = [], $status = 303, $headers = []);
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Task  $task
+     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Task $task)
+    public function destroy(Request $request)
     {
-        //
+        $task = Task::destroy($request->id);
+        // $project = Project::where('id', $request->id)->delete();
+
+        return redirect()->route('task.index', $parameters = [], $status = 303, $headers = []);
     }
 }

@@ -76,28 +76,31 @@ export default defineComponent({
         })
 
         const update =()=> {
-            store.dispatch('task/update')
-            drawer.value = false
-
-
-            // Inertia.visit('/task/update', {
-            //     method: 'post',
-            //     data: {
-            //         id: edit.id,
-            //         project_id: edit.project_id,
-            //         title: edit.title,
-            //         due_date: edit.due_date,
-            //     }
-            // }).then(res => {
-            // }).catch(err => {
-            //     const err_msg = err.response.data
-            //     commit('err_msg', err_msg)
-            // })
-
+            Inertia.visit('/task/update', {
+                method: 'post',
+                data: {
+                    id: edit.id,
+                    project_id: edit.project_id,
+                    title: edit.title,
+                    due_date: edit.due_date,
+                }
+            }).then(res => {
+                drawer.value = false
+            }).catch(err => {
+                const err_msg = err.response.data
+                commit('err_msg', err_msg)
+            })
         }
+
         const destroy = ()=> {
-            store.dispatch('task/destroy')
-            drawer.value = false
+            Inertia.post('/task/destroy', {
+                id: edit.id
+            }).then(res => {
+                drawer.value = false
+            }).catch(err => {
+                const err_msg = err.response.data
+                commit('err_msg', err_msg)
+            })
         }
 
         return {

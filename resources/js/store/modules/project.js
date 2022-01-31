@@ -10,7 +10,7 @@ const state = {
     project_name: "",
     due_date: null,
     completed_at: null,
-    deleted_at: "値取れてる？",
+    deleted_at: null,
     add_drawer: false,
     edit_drawer: false,
     err_msg: {},
@@ -51,41 +51,7 @@ const mutations = {
     }
 
 }
-const actions = {
-    store({ commit }) {
-        Inertia.post("/project/store", {
-            project_name: state.project_name,
-            due_date: state.due_date,
-        }).then(res => {
-        }).catch(err => {
-            const err_msg = err.response.data
-            commit('err_msg', err_msg)
-        })
-    },
-    update({ commit }) {
-        Inertia.visit('/project/update', {
-            method: 'post',
-            data: {
-                id: state.id,
-                project_name: state.project_name,
-                due_date: state.due_date,
-            }
-        }).then(res => {
-        }).catch(err => {
-            const err_msg = err.response.data
-            commit('err_msg', err_msg)
-        })
-    },
-    destroy({ commit }) {
-        Inertia.post('/project/destroy', {
-            id: state.id
-        }).then(res => {
-        }).catch(err => {
-            const err_msg = err.response.data
-            commit('err_msg', err_msg)
-        })
-    },
-}
+const actions = {}
 
 export default {
     namespaced: true,

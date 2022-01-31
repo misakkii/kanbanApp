@@ -51,35 +51,7 @@ const mutations = {
         state.form.created_by = newValue
     },
 }
-const actions = {
-    store({ commit }) {
-        Inertia.post('/task/store', {
-            project_id: state.form.project_id,
-            title: state.form.title,
-            due_date: state.form.due_date,
-            created_by: state.form.created_by,
-        }).then(res => {
-        }).catch(err => {
-            const err_msg = err.response.data
-            commit('err_msg', err_msg)
-        })
-    },
-    update({ commit }) {
-        Inertia.visit('/task/update', {
-            method: 'post',
-            data: {
-                id: state.form.id,
-                project_id: state.form.project_id,
-                title: state.form.title,
-                due_date: state.form.due_date,
-            }
-        }).then(res => {
-        }).catch(err => {
-            const err_msg = err.response.data
-            commit('err_msg', err_msg)
-        })
-    },
-}
+const actions = {}
 
 export default {
     namespaced: true,

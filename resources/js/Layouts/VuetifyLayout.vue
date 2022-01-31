@@ -126,8 +126,8 @@
     import Welcome from '@/Jetstream/Welcome'
     import AddProject from '../Pages/Project/Drawers/AddProject.vue'
     import EditProject from '../Pages/Project/Drawers/EditProject.vue'
-    import AddTask from'../Pages/Task/Drawer/AddTask.vue'
-    import EditTask from'../Pages/Task/Drawer/EditTask.vue'
+    import AddTask from'@/Pages/Task/Drawer/AddTask.vue'
+    import EditTask from'@/Pages/Task/Drawer/EditTask.vue'
     import { Link } from '@inertiajs/inertia-vue'
 
     export default defineComponent({

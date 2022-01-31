@@ -38,6 +38,8 @@
 import { computed, defineComponent, reactive } from '@vue/composition-api'
 import DatePicker from '@/components/DatePicker.vue'
 import { useStore } from '../../../store/index'
+import { Inertia } from '@inertiajs/inertia'
+
 
 export default defineComponent({
     components: {
@@ -87,8 +89,18 @@ export default defineComponent({
         })
 
         const save = ()=> {
-            store.dispatch('task/store')
-            drawer.value = !drawer.value
+
+            Inertia.post('/task/store', {
+                project_id: create.project_id,
+                title: create.title,
+                due_date: create.due_date,
+                created_by: create.created_by,
+            }).then(res => {
+                drawer.value = !drawer.value
+            }).catch(err => {
+                const err_msg = err.response.data
+                commit('err_msg', err_msg)
+        })
 
         }
 

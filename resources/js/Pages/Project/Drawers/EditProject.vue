@@ -11,10 +11,10 @@
                     <v-list-item-title>
                         プロジェクトの変更
                     </v-list-item-title>
-                    <v-text-field label="プロジェクト名" v-model="edit.project_name"></v-text-field>
-                    <v-text-field readonly label="YYYY-MM-DD" v-model="edit.due_date">
+                    <v-text-field label="プロジェクト名" v-model="form.project_name"></v-text-field>
+                    <v-text-field readonly label="YYYY-MM-DD" v-model="form.due_date">
                         <template v-slot:append-outer>
-                            <date-picker v-model="edit.due_date"/>
+                            <date-picker v-model="form.due_date"/>
                         </template>
                     </v-text-field>
                     <v-btn color="primary" @click="update">更新</v-btn>
@@ -40,7 +40,7 @@ export default defineComponent({
     setup() {
         const store = useStore()
 
-        const edit = reactive({
+        const form = reactive({
             id : computed({
                 get: ()=> store.getters['project/id'],
                 set: (val)=> store.commit('project/id', val)
@@ -61,17 +61,34 @@ export default defineComponent({
         })
 
         const update =()=> {
-            store.dispatch('project/update')
-            drawer.value = false
+            Inertia.visit('/project/update', {
+                method: 'post',
+                data: {
+                    id: form.id,
+                    project_name: form.project_name,
+                    due_date: form.due_date,
+                }
+            }).then(res => {
+                drawer.value = false
+            }).catch(err => {
+                const err_msg = err.response.data
+                commit('err_msg', err_msg)
+            })
         }
         const destroy = ()=> {
-            store.dispatch('project/destroy')
-            drawer.value = false
+            Inertia.post('/project/destroy', {
+                id: form.id
+            }).then(res => {
+                drawer.value = false
+            }).catch(err => {
+                const err_msg = err.response.data
+                commit('err_msg', err_msg)
+            })
         }
 
         return {
             drawer,
-            edit,
+            form,
             update,
             destroy,
         }

@@ -63,13 +63,14 @@ class ProjectController extends Controller
      */
     public function store(Request $request)
     {
+        // dd($request);
         $validator = Validator::make($request->all(), [
-            'title' => 'required | string',
+            'project_name' => 'required | string',
             'due_date' => 'nullable | date'
         ])->validateWithBag('saveProject');
 
         $project = Project::create([
-            'title' => $request->title,
+            'project_name' => $request->project_name,
             'due_date' => $request->due_date
         ]);
 
