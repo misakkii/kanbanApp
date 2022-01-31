@@ -3,11 +3,11 @@ import { Inertia } from '@inertiajs/inertia'
 const state = {
     data: {
         id: null,
-        title: "",
+        project_name: "",
         due_date: null,
     },
     id: null,
-    title: "",
+    project_name: "",
     due_date: null,
     completed_at: null,
     deleted_at: "値取れてる？",
@@ -22,7 +22,7 @@ const getters = {
     // データ系
     data: state => state.data,
     id: state => state.id,
-    title: state => state.title,
+    project_name: state => state.project_name,
     due_date: state => state.due_date,
     completed_at: state => state.completed_at,
     deleted_at: state => state.deleted_at,
@@ -40,8 +40,8 @@ const mutations = {
     id(state, newValue) {
         state.id = newValue
     },
-    title(state, newValue) {
-        state.title = newValue
+    project_name(state, newValue) {
+        state.project_name = newValue
     },
     due_date(state, newValue) {
         state.due_date = newValue
@@ -54,7 +54,7 @@ const mutations = {
 const actions = {
     store({ commit }) {
         Inertia.post("/project/store", {
-            title: state.title,
+            project_name: state.project_name,
             due_date: state.due_date,
         }).then(res => {
         }).catch(err => {
@@ -63,10 +63,13 @@ const actions = {
         })
     },
     update({ commit }) {
-        Inertia.post('/project/update', {
-            id: state.id,
-            title: state.title,
-            due_date: state.due_date,
+        Inertia.visit('/project/update', {
+            method: 'post',
+            data: {
+                id: state.id,
+                project_name: state.project_name,
+                due_date: state.due_date,
+            }
         }).then(res => {
         }).catch(err => {
             const err_msg = err.response.data

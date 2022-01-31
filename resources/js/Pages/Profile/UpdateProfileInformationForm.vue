@@ -53,6 +53,7 @@
                 <jet-input-error :message="form.errors._first_name" class="mt-2" />
             </div>
 
+
             <!-- Email -->
             <div class="col-span-6 sm:col-span-4">
                 <jet-label for="email" value="メールアドレス" />
@@ -74,6 +75,9 @@
 </template>
 
 <script>
+    import { computed, defineComponent, onMounted, reactive } from '@vue/composition-api'
+    import { useStore } from '../../store/index'
+
     import JetButton from '@/Jetstream/Button'
     import JetFormSection from '@/Jetstream/FormSection'
     import JetInput from '@/Jetstream/Input'
@@ -82,7 +86,7 @@
     import JetActionMessage from '@/Jetstream/ActionMessage'
     import JetSecondaryButton from '@/Jetstream/SecondaryButton'
 
-    export default {
+    export default defineComponent({
         components: {
             JetActionMessage,
             JetButton,
@@ -94,7 +98,32 @@
         },
 
         props: ['user'],
+        setup(props) {
+            const store = useStore()
 
+            const auth = reactive({
+                id: computed({
+                    get:()=> store.getters['user/id'],
+                    set:(val)=> store.commit('user/id', val),
+                }),
+                last_name: computed({
+                    get:()=> store.getters['user/last_name'],
+                    set:(val)=> store.commit('user/last_name', val),
+                }),
+                first_name: computed({
+                    get:()=> store.getters['user/first_name'],
+                    set:(val)=> store.commit('user/first_name', val),
+                }),
+            })
+            auth.id = props.user.id
+            auth.last_name = props.user.last_name
+            auth.first_name = props.user.first_name
+
+            return {
+                auth,
+            }
+
+        },
         data() {
             return {
                 form: this.$inertia.form({
@@ -142,5 +171,5 @@
                 });
             },
         },
-    }
+    })
 </script>

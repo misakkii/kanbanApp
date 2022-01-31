@@ -2,8 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
-use App\Models\Task;
+use App\Models\{
+    Task,
+    Project,
+    User,
+};
 use Inertia\Inertia;
 use Validator;
 
@@ -26,7 +31,60 @@ class TaskController extends Controller
      */
     public function create()
     {
-        //
+        // $tasks = Task::with('projects')->get();
+        $projects = Project::select('id', 'project_name')->get();
+        $user = User::find(Auth::id())->select('id')->get();
+        $tasks = Task::joinProject()
+            ->whereNull(['tasks.deleted_at'])
+            ->get();
+
+        // dd($tasks->toArray());
+
+        return Inertia::render('Task/List/Index', [
+            'tasks' => fn() => $tasks,
+            'projects' => fn() => $projects,
+            'auth' => $user
+        ]);
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function createCompletedList()
+    {
+        $projects = Project::select('id', 'project_name')->get();
+        $user = User::find(Auth::id())->select('id')->get();
+        $tasks = Task::joinProject()
+            ->whereNotNull(['tasks.completed_at'])
+            ->get();
+
+        return Inertia::render('Task/List/Completed', [
+            'tasks' => fn() => $tasks,
+            'projects' => fn() => $projects,
+            'auth' => $user
+        ]);
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function createDeletedList()
+    {
+        $projects = Project::select('id', 'project_name')->get();
+        $user = User::find(Auth::id())->select('id')->get();
+        $tasks = Task::joinProject()
+            ->whereNotNull(['tasks.deleted_at'])
+            ->get();
+
+        return Inertia::render('Task/List/Deleted', [
+            'tasks' => fn() => $tasks,
+            'projects' => fn() => $projects,
+            'auth' => $user
+        ]);
     }
 
     /**
@@ -40,10 +98,18 @@ class TaskController extends Controller
         $validator = Validator::make($request->all(), [
             'project_id' => 'required',
             'title' => 'required',
-            'deadline_date' => 'date',
-            'created_by' => '',
+            'due_date' => 'date | nullable',
+            'created_by' => 'required',
+        ])->validateWithBag('storeTask');
+
+        $task = Task::create([
+            'project_id' => $request->project_id,
+            'title' => $request->title,
+            'due_date' => $request->due_date,
+            'created_by' => $request->created_by,
         ]);
-        if($validator->fails()) {}
+
+        return redirect()->route('task.create', $parameters = [], $status = 303, $headers = []);
     }
 
     /**
@@ -77,7 +143,29 @@ class TaskController extends Controller
      */
     public function update(Request $request, Task $task)
     {
-        //
+        $input = $request->all();
+        // dd($input);
+
+        Validator::make($input, [
+            'project_id' => 'required',
+            'title' => 'required | string',
+            'due_date' => 'nullable | date',
+        ])->validateWithBag('taskUpdate');
+
+        $task = Task::where('id', $request->id)->update([
+            'project_id' => $request->project_id,
+            'title' => $request->title,
+            'due_date' => $request->due_date,
+        ]);
+
+        // DB::beginTransaction();
+        // try {
+        // } catch(Exception $e) {
+        //     DB::rollback();
+        // }
+        //     DB::commit();
+
+        return redirect()->route('task.create', $parameters = [], $status = 303, $headers = []);
     }
 
     /**

@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\{Model, Builder};
 use App\Models\{ Project, User };
 
 
@@ -19,9 +19,18 @@ class Task extends Model
         'deleted_at',
     ];
 
-    public function scopeJoinProjectName($query)
+    public function scopeJoinProject($query)
     {
-        // return $query->join
+        return $query->join('projects', 'tasks.project_id', '=', 'projects.id')->select(
+            'tasks.id',
+            'tasks.project_id',
+            'projects.project_name',
+            'tasks.title',
+            'tasks.due_date',
+            'tasks.created_by',
+            'tasks.completed_at',
+            'tasks.deleted_at',
+        );
     }
 
     public function users()
@@ -31,8 +40,8 @@ class Task extends Model
             ->withTimestamps();
     }
 
-    public function projects()
+    public function project()
     {
-        return $this->belongsToMany(Project::class);
+        return $this->belongsTo(Project::class);
     }
 }

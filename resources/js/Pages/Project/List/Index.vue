@@ -29,7 +29,6 @@
 import { defineComponent, computed } from '@vue/composition-api'
 import Layout from '@/Layouts/VuetifyLayout.vue'
 import { useStore } from '@/store/index'
-import { Inertia } from '@inertiajs/inertia'
 
 export default defineComponent({
     layout: Layout,
@@ -45,18 +44,18 @@ export default defineComponent({
             get: ()=> store.getters['project/add_drawer'],
             set: (newValue)=> {
                 store.commit('project/add_drawer_op', newValue)
-                store.commit('project/title', "")
+                store.commit('project/project_name', "")
             }
         })
         const edit_drawer = computed({
-            get: ()=>store.getters['project/add_drawer'],
+            get: ()=>store.getters['project/edit_drawer'],
             set: (newValue)=> store.commit('project/edit_drawer_op', newValue)
         })
 
         const edit =(item)=>{
             edit_drawer.value = !edit_drawer.value
             store.commit('project/id', item.id)
-            store.commit('project/title', item.title)
+            store.commit('project/project_name', item.project_name)
             store.commit('project/due_date', item.due_date)
             console.log(item)
         }
@@ -67,7 +66,7 @@ export default defineComponent({
             headers: [
                 {
                     text: 'プロジェクト名',
-                    value: 'title'
+                    value: 'project_name'
                 },
                 {
                     text: '締め切り期日',

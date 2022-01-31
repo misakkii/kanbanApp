@@ -66,7 +66,7 @@ class ProjectController extends Controller
         $validator = Validator::make($request->all(), [
             'title' => 'required | string',
             'due_date' => 'nullable | date'
-        ])->validatewithBag('saveProject');
+        ])->validateWithBag('saveProject');
 
         $project = Project::create([
             'title' => $request->title,
@@ -107,25 +107,26 @@ class ProjectController extends Controller
     public function update(Request $request)
     {
         $input = $request->all();
+        // $task = Task::find($input->id());
 
         // dd($input);
         Validator::make($input, [
-            'title' => 'required | string',
-            'due_date' => 'nullable | date'
+            'project_name' => 'required | string',
+            'due_date' => 'nullable | date',
         ])->validateWithBag('projectUpdate');
 
         $project = Project::where('id', $request->id)->update([
-            'title' => $request->title,
+            'project_name' => $request->project_name,
             'due_date' => $request->due_date,
         ]);
 
-        return redirect()->route('project.index', $parameters = [], $status = 303, $headers = []);
-
-
         // $project = Project::find($input->id);
-        // $project->title = $input->title;
+        // $project->tasks()->save(['project_name' => $input->project_name]);
+        // $project->title = $input->project_name;
         // $project->title = $input->due_date;
         // $project->save();
+
+        return redirect()->route('project.index', $parameters = [], $status = 303, $headers = []);
 
     }
 

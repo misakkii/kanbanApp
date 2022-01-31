@@ -2,8 +2,14 @@
 
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\{ ProjectController };
+use App\Http\Controllers\{
+    ProjectController,
+    TaskController,
+    DashboardController,
+};
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
+use App\Models\User;
 
 /*
 |--------------------------------------------------------------------------
@@ -26,14 +32,13 @@ Route::get('/', function () {
 });
 
 Route::middleware(['auth:sanctum', 'verified'])->group(function() {
-    Route::get('/dashboard', function() {
-        return Inertia::render('Dashboard');
-    })->name('dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'create'])->name('dashboard');
 
     Route::get('/user/task', function() {
         return Inertia::render('Task');
     })->name('user.task');
 
+    //プロジェクト
     Route::get('/project/list', [ProjectController::class, 'index'])->name('project.index');
     Route::get('/project/list/completion', [ProjectController::class, 'createCompletion'])->name('project.create.completion');
     Route::get('/project/list/delete', [ProjectController::class, 'createDelete'])->name('project.create.delete');
@@ -41,4 +46,14 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function() {
     Route::post('/project/store', [ProjectController::class, 'store'])->name('project.store');
     Route::post('/project/update', [ProjectController::class, 'update'])->name('project.update');
     Route::post('/project/destroy', [ProjectController::class, 'destroy'])->name('project.destroy');
+
+    //タスク
+    Route::get('/task/list', [TaskController::class, 'create'])->name('task.create');
+    Route::get('/task/list/completed', [TaskController::class, 'createCompletedList'])->name('task.create.completion');
+    Route::get('/task/list/deleted', [TaskController::class, 'createDeletedList'])->name('task.create.delete');
+
+    Route::post('/task/store', [TaskController::class, 'store'])->name('task.store');
+    Route::post('/task/update', [TaskController::class, 'update'])->name('task.update');
+    Route::post('/task/destroy', [TaskController::class, 'destroy'])->name('task.destroy');
+
 });

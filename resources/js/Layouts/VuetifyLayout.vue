@@ -64,6 +64,8 @@
         <!-- right -->
         <add-project />
         <edit-project />
+        <add-task />
+        <edit-task />
 
         <v-app-bar
             app
@@ -124,6 +126,8 @@
     import Welcome from '@/Jetstream/Welcome'
     import AddProject from '../Pages/Project/Drawers/AddProject.vue'
     import EditProject from '../Pages/Project/Drawers/EditProject.vue'
+    import AddTask from'../Pages/Task/Drawer/AddTask.vue'
+    import EditTask from'../Pages/Task/Drawer/EditTask.vue'
     import { Link } from '@inertiajs/inertia-vue'
 
     export default defineComponent({
@@ -132,6 +136,8 @@
             Welcome,
             AddProject,
             EditProject,
+            AddTask,
+            EditTask,
         },
         setup() {
             const data = reactive({
@@ -150,13 +156,18 @@
                         lists: [
                             {
                                 name: "一覧",
-                                link: "#",
-                                link_name: "project",
+                                link: "/task/list",
+                                link_name: "task.create",
                             },
                             {
-                                name: "完了一覧",
-                                link: "#",
-                                link_name: "project.completion",
+                                name: "完了した一覧",
+                                link: "/task/list/completed",
+                                link_name: "task.create.completed",
+                            },
+                            {
+                                name: "削除した一覧",
+                                link: "/task/list/deleted",
+                                link_name: "task.create.deleted",
                             },
                         ],
                     },

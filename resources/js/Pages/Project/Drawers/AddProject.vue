@@ -11,7 +11,7 @@
                     <v-list-item-title>
                         プロジェクトの追加
                     </v-list-item-title>
-                    <v-text-field label="新規プロジェクト名" v-model="create.title"></v-text-field>
+                    <v-text-field label="新規プロジェクト名" v-model="create.project_name"></v-text-field>
                     <v-text-field readonly label="YYYY-MM-DD" v-model="create.due_date">
                         <template v-slot:append-outer>
                             <date-picker />
@@ -39,17 +39,6 @@ export default defineComponent({
     setup() {
         const store = useStore()
 
-        const create = reactive({
-            title: computed({
-                get: ()=> store.getters['project/title'],
-                set: (val)=> store.commit('project/title', val) ,
-            }),
-            due_date: computed({
-                get: ()=> store.getters['project/due_date'],
-                set: (val)=> store.commit('project/due_date', val),
-            }),
-        })
-
         const drawer = computed({
             get: () => store.getters['project/add_drawer'],
             set: (val) => {
@@ -58,6 +47,18 @@ export default defineComponent({
                 store.commit('project/due_date', null)
             }
         })
+
+        const create = reactive({
+            project_name: computed({
+                get: ()=> store.getters['project/project_name'],
+                set: (val)=> store.commit('project/project_name', val) ,
+            }),
+            due_date: computed({
+                get: ()=> store.getters['project/due_date'],
+                set: (val)=> store.commit('project/due_date', val),
+            }),
+        })
+
         const save = ()=> {
             store.dispatch('project/store')
             drawer.value = false

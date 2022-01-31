@@ -11,7 +11,7 @@
                     <v-list-item-title>
                         プロジェクトの変更
                     </v-list-item-title>
-                    <v-text-field label="プロジェクト名" v-model="edit.title"></v-text-field>
+                    <v-text-field label="プロジェクト名" v-model="edit.project_name"></v-text-field>
                     <v-text-field readonly label="YYYY-MM-DD" v-model="edit.due_date">
                         <template v-slot:append-outer>
                             <date-picker v-model="edit.due_date"/>
@@ -45,9 +45,9 @@ export default defineComponent({
                 get: ()=> store.getters['project/id'],
                 set: (val)=> store.commit('project/id', val)
             }),
-            title: computed({
-                get: ()=> store.getters['project/title'],
-                set: (val)=> store.commit('project/title', val)
+            project_name: computed({
+                get: ()=> store.getters['project/project_name'],
+                set: (val)=> store.commit('project/project_name', val)
             }),
             due_date: computed({
                 get: ()=> store.getters['project/due_date'],

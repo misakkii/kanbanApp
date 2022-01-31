@@ -23,8 +23,10 @@ export default defineComponent({
             menu: false
         })
         const picker = computed({
-            get:() => store.getters['project/due_date'],
+            get:() => store.getters['picker'],
             set:(value) => {
+                store.commit('picker', value)
+                store.commit('task/due_date', value)
                 store.commit('project/due_date', value)
                 data.menu = false
             }
