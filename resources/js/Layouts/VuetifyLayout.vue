@@ -49,7 +49,6 @@
                         v-for="list in nav_list.lists" :key="list.name"
                         as="v-list-item"
                         :href="list.link"
-
                     >
                         <v-list-item-content>
                             <v-list-item-title v-text="list.name"></v-list-item-title>
@@ -64,7 +63,6 @@
         <!-- right -->
         <add-project />
         <edit-project />
-        <add-task />
         <edit-task />
 
         <v-app-bar
@@ -126,7 +124,6 @@
     import Welcome from '@/Jetstream/Welcome'
     import AddProject from '../Pages/Project/Drawers/AddProject.vue'
     import EditProject from '../Pages/Project/Drawers/EditProject.vue'
-    import AddTask from'@/Pages/Task/Drawer/AddTask.vue'
     import EditTask from'@/Pages/Task/Drawer/EditTask.vue'
     import { Link } from '@inertiajs/inertia-vue'
 
@@ -136,7 +133,6 @@
             Welcome,
             AddProject,
             EditProject,
-            AddTask,
             EditTask,
         },
         setup() {

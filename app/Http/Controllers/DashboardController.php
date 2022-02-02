@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
-use App\Models\{Dashboard, User};
+use App\Models\{User, Task};
 use Inertia\Inertia;
 
 
@@ -12,12 +12,24 @@ class DashboardController extends Controller
 {
     /**
      * Display a listing of the resource.
-     *
+     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $users_all = User::all();
+
+        // リクエストユーザーのアサインしているタスク
+        $tasks = $users_all->find(1)->tasks()->get();
+        // dd($tasks->toArray());
+
+        $users = User::select('id', 'last_name', 'first_name')->get();
+        return Inertia::render('Dashboard', [
+            'users' => $users,
+            'auth' => User::where('id', Auth::id())
+                ->select('id', 'last_name', 'first_name')
+                ->get()
+        ]);
     }
 
     /**
@@ -27,11 +39,7 @@ class DashboardController extends Controller
      */
     public function create()
     {
-        return Inertia::render('Dashboard', [
-            'auth' => User::where('id', Auth::id())
-                ->select('id', 'last_name', 'first_name')
-                ->get()
-        ]);
+        //
     }
 
     /**

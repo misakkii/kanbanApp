@@ -32,11 +32,8 @@ Route::get('/', function () {
 });
 
 Route::middleware(['auth:sanctum', 'verified'])->group(function() {
-    Route::get('/dashboard', [DashboardController::class, 'create'])->name('dashboard');
-
-    Route::get('/user/task', function() {
-        return Inertia::render('Task');
-    })->name('user.task');
+    //ダッシュボード
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     //プロジェクト
     Route::get('/project/list', [ProjectController::class, 'index'])->name('project.index');

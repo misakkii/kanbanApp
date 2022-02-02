@@ -10,6 +10,7 @@ use App\Models\{
     User,
 };
 use Inertia\Inertia;
+use Carbon\Carbon;
 use Validator;
 
 class TaskController extends Controller
@@ -24,7 +25,8 @@ class TaskController extends Controller
         //
         // $tasks = Task::with('projects')->get();
         $projects = Project::select('id', 'project_name')->get();
-        $user = User::find(Auth::id())->select('id')->get();
+        $user = User::where('id', Auth::id())->select('id', 'last_name', 'first_name')->get();
+        $users = User::select('id', 'last_name', 'first_name')->get();
         $tasks = Task::joinProject()
             ->whereNull(['tasks.deleted_at'])
             ->get();
@@ -34,7 +36,8 @@ class TaskController extends Controller
         return Inertia::render('Task/List/Index', [
             'tasks' => fn() => $tasks,
             'projects' => fn() => $projects,
-            'auth' => $user
+            'auth' => $user,
+            'users' => $users,
         ]);
     }
 
@@ -96,18 +99,24 @@ class TaskController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
+            'user_id' => 'nullable',
             'project_id' => 'required',
             'title' => 'required',
             'due_date' => 'date | nullable',
             'created_by' => 'required',
         ])->validateWithBag('storeTask');
+        // dd($validator);
 
         $task = Task::create([
-            'project_id' => $request->project_id,
-            'title' => $request->title,
-            'due_date' => $request->due_date,
-            'created_by' => $request->created_by,
+            'project_id' => $validator['project_id'],
+            'title' => $validator['title'],
+            'due_date' => $validator['due_date'],
+            'created_by' => $validator['created_by'],
         ]);
+
+        //ここで複数のuser_idが入ればそのレコード分保存がかかる[user_id : {1, 2, 3}]
+        $userId = $validator['user_id'];
+        $task->users()->sync($userId, false);
 
         return redirect()->route('task.index', $parameters = [], $status = 303, $headers = []);
     }
@@ -176,8 +185,9 @@ class TaskController extends Controller
      */
     public function destroy(Request $request)
     {
-        $task = Task::destroy($request->id);
-        // $project = Project::where('id', $request->id)->delete();
+        $task = Task::find($request->id);
+        $task->deleted_at = Carbon::now();
+        $task->save();
 
         return redirect()->route('task.index', $parameters = [], $status = 303, $headers = []);
     }

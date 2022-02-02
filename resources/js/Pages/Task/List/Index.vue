@@ -1,4 +1,5 @@
 <template>
+<div>
     <v-container>
         <template>
                 <v-data-table
@@ -23,40 +24,55 @@
                 </v-data-table>
             </template>
     </v-container>
+    <add-task
+        :auth="auth"
+        :users="users"
+        :projects="projects"
+    />
+</div>
 </template>
 
 <script>
-import { computed, defineComponent, reactive } from '@vue/composition-api'
-import Layout from '@/Layouts/VuetifyLayout.vue'
-import { useStore } from '@/store/index'
+    import { computed, defineComponent, reactive } from '@vue/composition-api'
+    import Layout from '@/Layouts/VuetifyLayout.vue'
+    import AddTask from'@/Pages/Task/Drawer/AddTask.vue'
+    import { useStore } from '@/store/index'
 
 export default defineComponent({
     layout: Layout,
-    props: ['projects', 'tasks', 'auth', 'items'],
+    components: {
+        AddTask
+    },
+    props: [
+        //一覧データ
+        'tasks',
+        //登録データ
+        'projects',
+        'auth',
+        'users',
+    ],
     setup(props) {
         const store = useStore()
 
+        //データ系
         const data = reactive({
             projects: computed({
                 get: ()=> store.getters['task/projects'],
                 set: (val)=> store.commit('task/projects', val),
             }),
-            created_by: computed({
-                get: ()=> store.getters['task/created_by'],
-                set: (val)=> store.commit('task/created_by', val),
-            }),
         })
         data.projects = props.projects
-        data.created_by = props.auth[0].id
 
         const user = computed({
             get: ()=>store.getters['user/full_name']
         })
 
-        //ドロワーのフラグ
-         const add_drawer = computed({
+        //制御系
+        const add_drawer = computed({
             get: ()=> store.getters['task/add_drawer'],
-            set: (val)=> store.commit('task/add_drawer_op', val)
+            set: (val)=> {
+                store.commit('task/add_drawer_op', val)
+            }
         })
 
         const edit_drawer = computed({

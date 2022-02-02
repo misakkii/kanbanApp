@@ -6,7 +6,6 @@ const state = {
         project_id: null,
         title: "",
         due_date: null,
-        created_by: null,
     },
     add_drawer: false,
     edit_drawer: false,
@@ -23,7 +22,6 @@ const getters = {
     project_id: state => state.form.project_id,
     title: state => state.form.title,
     due_date: state => state.form.due_date,
-    created_by: state => state.form.created_by,
 }
 const mutations = {
     add_drawer_op(state,newValue) {
@@ -46,9 +44,6 @@ const mutations = {
     },
     due_date(state, newValue) {
         state.form.due_date = newValue
-    },
-    created_by(state, newValue) {
-        state.form.created_by = newValue
     },
 }
 const actions = {}
