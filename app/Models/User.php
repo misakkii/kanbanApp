@@ -68,4 +68,10 @@ class User extends Authenticatable
             ->withPivot('order_num', 'status', 'completed_at')
             ->withTimestamps();
     }
+    public function worktimes()
+    {
+        return $this->belongsToMany(Task::class, 'task_worktime', 'task_id', 'user_id')
+            ->withPivot('start_date_time', 'back_today_time', 'use_date', 'deleted_at')
+            ->withTimestamps();
+    }
 }
