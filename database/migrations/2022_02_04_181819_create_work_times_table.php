@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateTaskWorktimeTable extends Migration
+class CreateWorkTimesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class CreateTaskWorktimeTable extends Migration
      */
     public function up()
     {
-        Schema::create('task_worktime', function (Blueprint $table) {
+        Schema::create('work_times', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained('users');
             $table->foreignId('task_id')->constrained('tasks');
@@ -32,6 +32,6 @@ class CreateTaskWorktimeTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('task_worktime');
+        Schema::dropIfExists('work_times');
     }
 }

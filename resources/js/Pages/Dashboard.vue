@@ -3,28 +3,28 @@
         <v-row>
             <!-- ユーザーの件数 -->
             <v-col
-                v-for="user in data" :key="user.id"
+                v-for="user in task_in_today" :key="user.id"
                 class="pa-1"
                 cols="12"
                 md="3"
             >
                 <v-card
-                    class="overflow-y-auto mx-auto"
+                    min-height="110%"
                 >
                     <v-card-title v-text="user.last_name"></v-card-title>
 
                     <v-divider></v-divider>
 
-                    <!-- ユーザーがアサインしているタスク -->
+                    <!-- ユーザーがアサインしているNowタスク -->
                     <v-col cols="12">
-                        <draggable :options="{group:user.id}">
+                        <draggable>
                         <v-card
-                            v-for="task in user.now" :key="task.id"
+                            v-for="n in 1" :key="n"
                             class="ma-1"
                         >
                             <v-card-text class="pa-1">
-                                <div v-text="now.project_name">project name</div>
-                                <p class="text-h5 text--primary ma-0" v-text="now.title"></p>
+                                <div>project name</div>
+                                <p class="text-h5 text--primary ma-0">title</p>
                             </v-card-text>
                         </v-card>
                         </draggable>
@@ -32,41 +32,42 @@
 
                     <v-divider></v-divider>
 
-                    <!-- ユーザーがアサインしているタスク -->
+                    <!-- ユーザーがアサインしているTodayタスク -->
                     <v-col cols="12">
-                        <draggable :options="{group: user.id}">
+                        <draggable>
                             <v-card
-                                v-for="task in user.tasks" :key="task.id"
+                                v-for="today in user.task_in_today" :key="today.id"
+                                @click="drawer(today)"
                                 class="ma-1"
                             >
                                 <v-card-text class="pa-1">
-                                    <div v-text="task.project_name">project name</div>
-                                    <p class="text-h5 text--primary ma-0" v-text="task.title"></p>
+                                    <div v-text="today.project_name"></div>
+                                    <p class="text-h5 text--primary ma-0" v-text="today.title"></p>
                                 </v-card-text>
                             </v-card>
                         </draggable>
                     </v-col>
+
                 </v-card>
             </v-col>
         </v-row>
+
     </v-container>
 </template>
 
 <script>
-    import { computed, defineComponent, reactive } from '@vue/composition-api'
-    import AppLayout from '@/Layouts/AppLayout'
+    import { computed, defineComponent, onMounted, reactive } from '@vue/composition-api'
     import Layout from '@/Layouts/VuetifyLayout'
     import Welcome from '@/Jetstream/Welcome'
-    import { Link } from '@inertiajs/inertia-vue'
-    import Top from './Top.vue'
-    import { useStore } from '../store/index'
+    import { useStore } from '@/store/index'
     import draggable from 'vuedraggable'
+    import { Inertia } from '@inertiajs/inertia'
+    import { Link } from '@inertiajs/inertia-vue'
+
 
     export default defineComponent({
         layout: Layout,
         components: {
-            AppLayout,
-            Top,
             Link,
             Welcome,
             draggable,
@@ -77,32 +78,46 @@
             },
             users: {
                 type: Array
-            }
+            },
+            task_in_today: {
+                type: Array
+            },
         },
         setup(props) {
-            console.log(props.users)
+            // console.log(props.users)
             const store = useStore()
 
-            const users_data = props.users
+            // const data = reactive({
+            //     users: [
+            //         {
+            //             id: 90,
+            //             last_name: "鈴木",
+            //             first_name: "太郎",
+            //             now: [],
+            //             //Echoからのデータの受取(全データの入れ替え※件数が少ないため), 変更条件はusers.idの一致
+            //             today: [],
+            //             done: [],
+            //         },
+            //     ]
+            // })
+            onMounted(()=> {
+                window.Echo.private('task-added')
+                .listen('TaskAdded', (e)=> {
+                    user.today.push(e)
+                    console.log(e);
+                })
+            })
 
             const user = reactive({
-                id: computed({
-                    get: ()=> store.getters['user/id'],
-                    set: (val)=> store.commit('user/id', val),
-                }),
-                last_name: computed({
-                    get: ()=> store.getters['user/last_name'],
-                    set: (val)=> store.commit('user/last_name', val),
-                }),
-                first_name: computed({
-                    get: ()=> store.getters['user/first_name'],
-                    set: (val)=> store.commit('user/first_name', val),
-                }),
+                id: 1,
+                last_name: "",
+                first_name: "",
+                today: [],
             })
-            user.id = props.auth[0].id
-            user.last_name = props.auth[0].last_name
-            user.first_name = props.auth[0].first_name
-            console.log(user)
+
+            const drawer =(val)=> {
+                console.log(val)
+            }
 
             const logout =()=> {
                 this.$inertia.post(route('logout'));
@@ -111,8 +126,9 @@
 
             return {
                 logout,
-                users_data,
-                data: [
+                drawer,
+                user,
+                test_data: [
                     {
                         id: 1,
                         last_name: "上野",
@@ -128,7 +144,7 @@
                                 project_name: "上野特別プロジェクト",
                                 title: "上野２"
                             },
-                        ]
+                        ],
                     },
                     {
                         id: 2,

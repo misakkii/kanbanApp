@@ -66,11 +66,38 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Task::class)
             ->withPivot('order_num', 'status', 'completed_at')
+            ->where('status', 'today')
             ->withTimestamps();
     }
-    public function worktimes()
+
+    public function taskInToday()
     {
-        return $this->belongsToMany(Task::class, 'task_worktime', 'task_id', 'user_id')
+        return $this->belongsToMany(Task::class, 'task_user', 'user_id', 'task_id')
+            ->joinProject()
+            ->withPivot('order_num', 'status', 'completed_at')
+            ->where('status', 'today')
+            ->withTimestamps();
+    }
+
+    public function taskInNow()
+    {
+        return $this->belongsToMany(Task::class, 'task_user', 'user_id', 'task_id')
+            ->joinProject()
+            ->withPivot('order_num', 'status', 'completed_at')
+            ->where('status', 'now');
+    }
+
+    public function taskInStandby()
+    {
+        return $this->belongsToMany(Task::class, 'task_user', 'user_id', 'task_id')
+            ->joinProject()
+            ->withPivot('order_num', 'status', 'completed_at')
+            ->where('status', 'standby');
+    }
+
+    public function workTimes()
+    {
+        return $this->belongsToMany(Task::class, 'work_times', 'user_id', 'task_id')
             ->withPivot('start_date_time', 'back_today_time', 'use_date', 'deleted_at')
             ->withTimestamps();
     }

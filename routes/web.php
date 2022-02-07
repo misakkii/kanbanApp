@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use App\Models\User;
 
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -34,6 +35,8 @@ Route::get('/', function () {
 Route::middleware(['auth:sanctum', 'verified'])->group(function() {
     //ダッシュボード
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::post('/assign/off', [DashboardController::class, 'assignOff']);
+    Route::post('/start', [DashboardController::class, 'start']);
 
     //プロジェクト
     Route::get('/project/list', [ProjectController::class, 'index'])->name('project.index');
