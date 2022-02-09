@@ -66,7 +66,7 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Task::class)
             ->withPivot('order_num', 'status', 'completed_at')
-            ->where('status', 'today')
+            // ->where('status', 'today')
             ->withTimestamps();
     }
 
@@ -98,7 +98,7 @@ class User extends Authenticatable
     public function workTimes()
     {
         return $this->belongsToMany(Task::class, 'work_times', 'user_id', 'task_id')
-            ->withPivot('start_date_time', 'back_today_time', 'use_date', 'deleted_at')
+            ->withPivot('executed_time', 'suspended_time', 'completed_time', 'use_date', 'deleted_at')
             ->withTimestamps();
     }
 }

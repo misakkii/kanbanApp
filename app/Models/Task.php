@@ -43,7 +43,7 @@ class Task extends Model
     public function workTimes()
     {
         return $this->belongsToMany(Task::class, 'work_times', 'task_id', 'user_id')
-            ->withPivot('start_date_time', 'back_today_time', 'use_date', 'deleted_at')
+            ->withPivot('executed_time', 'suspended_time', 'completed_time', 'use_date', 'deleted_at')
             ->withTimestamps();
     }
 

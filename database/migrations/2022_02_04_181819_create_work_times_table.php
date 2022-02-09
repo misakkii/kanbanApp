@@ -17,8 +17,9 @@ class CreateWorkTimesTable extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained('users');
             $table->foreignId('task_id')->constrained('tasks');
-            $table->dateTime('start_date_time');
-            $table->dateTime('back_today_time')->nullable();
+            $table->dateTime('executed_time');
+            $table->dateTime('suspended_time')->nullable();
+            $table->dateTime('completed_time')->nullable();
             $table->date('use_date');
             $table->timestamps();
             $table->dateTime('deleted_at')->nullable();
