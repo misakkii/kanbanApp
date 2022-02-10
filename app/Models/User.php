@@ -95,6 +95,14 @@ class User extends Authenticatable
             ->where('status', 'standby');
     }
 
+    public function taskInDone()
+    {
+        return $this->belongsToMany(Task::class, 'task_user', 'user_id', 'task_id')
+            ->joinProject()
+            ->withPivot('order_num', 'status', 'completed_at')
+            ->where('status', 'done');
+    }
+
     public function workTimes()
     {
         return $this->belongsToMany(Task::class, 'work_times', 'user_id', 'task_id')

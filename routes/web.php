@@ -37,6 +37,7 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function() {
     Route::post('/assign/off', [DashboardController::class, 'assignOff']);
     Route::post('task/execute', [DashboardController::class, 'executeTask']);
     Route::post('task/suspend', [DashboardController::class, 'suspendTask']);
+    Route::post('task/complete', [DashboardController::class, 'completeTheTask']);
 
     //ダッシュボード
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');

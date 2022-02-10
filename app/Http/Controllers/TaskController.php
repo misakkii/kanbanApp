@@ -31,7 +31,10 @@ class TaskController extends Controller
             ->whereNull(['tasks.deleted_at'])
             ->get();
 
-        // dd($tasks->toArray());
+        $test = User::with('taskInToday')
+            ->select('id', 'last_name', 'first_name')
+            ->get();
+        // dd($test->toArray());
 
         return Inertia::render('Task/List/Index', [
             'tasks' => fn() => $tasks,
@@ -98,6 +101,7 @@ class TaskController extends Controller
      */
     public function store(Request $request)
     {
+        // dd($request);
         $validator = Validator::make($request->all(), [
             'user_id' => 'nullable',
             'project_id' => 'required',
@@ -114,9 +118,16 @@ class TaskController extends Controller
             'created_by' => $validator['created_by'],
         ]);
 
-        //ここで複数のuser_idが入ればそのレコード分保存がかかる[user_id : {1, 2, 3}]
-        $userId = $validator['user_id'];
-        $task->users()->sync($userId, false);
+        //中間テーブル
+        $user_id = $validator['user_id'];
+        $task->users()->sync($user_id, false);
+
+        //ブロードキャスト返り値
+        $new_today_tasks = User::all()
+            ->find(2)//requestを送ったユーザーのID
+            ->tasks()->joinProject()
+            ->whereIn('status', ['today', 'standby'])
+            ->get();
 
         return redirect()->route('task.index', $parameters = [], $status = 303, $headers = []);
     }
@@ -155,24 +166,17 @@ class TaskController extends Controller
         $input = $request->all();
         // dd($input);
 
-        Validator::make($input, [
+        $validator = Validator::make($input, [
             'project_id' => 'required',
             'title' => 'required | string',
             'due_date' => 'nullable | date',
         ])->validateWithBag('taskUpdate');
 
         $task = Task::where('id', $request->id)->update([
-            'project_id' => $request->project_id,
-            'title' => $request->title,
-            'due_date' => $request->due_date,
+            'project_id' => $validator['project_id'],
+            'title' => $validator['title'],
+            'due_date' => $validator['due_date'],
         ]);
-
-        // DB::beginTransaction();
-        // try {
-        // } catch(Exception $e) {
-        //     DB::rollback();
-        // }
-        //     DB::commit();
 
         return redirect()->route('task.index', $parameters = [], $status = 303, $headers = []);
     }

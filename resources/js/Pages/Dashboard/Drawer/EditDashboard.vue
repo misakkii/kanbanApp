@@ -29,6 +29,7 @@
                     <v-btn color="yellow" @click="assignOff">アサインの解除</v-btn>
                     <v-btn color="purple lighten-1" @click="start" dark >タスクを実行</v-btn>
                     <v-btn color="purple darken-1" @click="back" dark >タスクを待機</v-btn>
+                    <v-btn color="purple darken-2" @click="complete" dark >タスクを完了</v-btn>
                     <v-btn color="purple" @click="onClick" dark >snackbar表示</v-btn>
                     {{now_count}}
 
@@ -115,6 +116,7 @@ export default defineComponent({
             get: ()=> store.getters['dashboard/now_task_count']
         })
 
+        //status = now, executed_time
         const start =()=> {
             // console.log(now_count.value)
             if(now_count.value >= 1) {
@@ -134,9 +136,21 @@ export default defineComponent({
             }
         }
 
-        //drawerが閉じない時、now_countの値が変わらない
+        //status = today, suspended_time
         const back =()=> {
             Inertia.visit('task/suspend', {
+                method: 'post',
+                data: {
+                    task_id: form.task_id,
+                    user_id: form.user_id,
+                }
+            })
+            drawer.value = !drawer.value
+        }
+
+        //status = done, completed_time
+        const complete =()=> {
+            Inertia.visit('task/complete', {
                 method: 'post',
                 data: {
                     task_id: form.task_id,
@@ -165,6 +179,7 @@ export default defineComponent({
             assignOff,
             start,
             back,
+            complete,
             destroy,
             onClick,
         }

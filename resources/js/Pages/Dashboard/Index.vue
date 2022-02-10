@@ -37,9 +37,38 @@
                     </v-col>
 
                     <v-divider></v-divider>
+                    <v-tabs grow v-model="user.tab">
+                        <v-tab
+                            v-for="item in tab_titles" :key="item"
+                        >{{ item }}</v-tab>
+                    </v-tabs>
+
+                    <v-tabs-items v-model="user.tab">
+                        <v-tab-item
+                            v-for="(texts, index) in user.t_d_data" :key="index"
+                        >
+                            <!-- <v-card flat>
+                                <v-card-text>{{ texts }} {{ user.tab }}</v-card-text>
+                            </v-card> -->
+                            <v-col cols="12">
+                                <draggable>
+                                    <v-card
+                                        v-for="task in texts" :key="task.id"
+                                        @click="select(task), selectUser(user)"
+                                        class="ma-1"
+                                    >
+                                        <v-card-text class="pa-1">
+                                            <div v-text="task.project_name"></div>
+                                            <p class="text-h5 text--primary ma-0" v-text="task.title"></p>
+                                        </v-card-text>
+                                    </v-card>
+                                </draggable>
+                            </v-col>
+                        </v-tab-item>
+                    </v-tabs-items>
 
                     <!-- ユーザーがアサインしているTodayタスク -->
-                    <v-col cols="12">
+                    <!-- <v-col cols="12">
                         <draggable>
                             <v-card
                                 v-for="today in user.task_in_today" :key="today.id"
@@ -52,8 +81,7 @@
                                 </v-card-text>
                             </v-card>
                         </draggable>
-                    </v-col>
-
+                    </v-col> -->
                 </v-card>
             </v-col>
         </v-row>
@@ -105,6 +133,7 @@
                     get: ()=> store.getters['dashboard/now_task_count'],
                     set: (val)=> store.commit('dashboard/now_task_count', val)
                 }),
+                users: props.users_tasks,
             })
             //watchで再定義
             const selectUser = (val)=> {
@@ -115,6 +144,12 @@
             }
 
             onMounted(()=> {
+                data.users.forEach(arr => {
+                    arr["tab"] = 0
+                    arr["t_d_data"] = [arr.task_in_today, arr.task_in_done]
+                    console.log(arr)
+                });
+                // data.users["status"] = ["today", "done"]
                 store.commit('dashboard/users_tasks', props.users_tasks)
 
                 window.Echo.private('task-added')
@@ -158,7 +193,8 @@
                 select,
                 selectUser,
                 logout,
-
+                tab_titles: ['Today', 'done'],
+                texts: ['text1', 'text2']
             }
         },
     })

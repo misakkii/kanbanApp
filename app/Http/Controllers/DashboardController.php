@@ -29,6 +29,7 @@ class DashboardController extends Controller
             'taskInToday',
             'taskInNow',
             'taskInStandby',
+            'taskInDone',
         )
             ->select('id', 'last_name', 'first_name')
             ->get();
@@ -160,6 +161,22 @@ class DashboardController extends Controller
         $task_status->users()->updateExistingPivot($request->user_id, ['status' => $status]);
 
         return redirect()->route('dashboard', $parameters = [], $status = 303, $headers = []);
+    }
+
+    public function completeTheTask(Request $request)
+    {
+        $task_time = Work_time::where('user_id', $request->user_id)
+            ->where('task_id', $request->task_id)
+            ->latest('created_at')
+            ->first();
+        // dd($task_time->toArray());
+        $task_time->completed_time = Carbon::now();
+        $task_time->save();
+
+        $task_status = Task::find($request->task_id);
+
+        $status = 'done';
+        $task_status->users()->updateExistingPivot($request->user_id, ['status' => $status]);
     }
 
     /**
