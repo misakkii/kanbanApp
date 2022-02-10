@@ -33,10 +33,15 @@ Route::get('/', function () {
 });
 
 Route::middleware(['auth:sanctum', 'verified'])->group(function() {
+
+    Route::post('/assign/off', [DashboardController::class, 'assignOff']);
+    Route::post('task/execute', [DashboardController::class, 'executeTask']);
+    Route::post('task/suspend', [DashboardController::class, 'suspendTask']);
+
     //ダッシュボード
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-    Route::post('/assign/off', [DashboardController::class, 'assignOff']);
-    Route::post('/start', [DashboardController::class, 'start']);
+    Route::post('/dashboard/update', [DashboardController::class, 'update']);
+    Route::post('/dashboard/chengeToToday', [DashboardController::class, 'chengeToToday']);
 
     //プロジェクト
     Route::get('/project/list', [ProjectController::class, 'index'])->name('project.index');

@@ -1,46 +1,97 @@
 <template>
     <div class="text-center">
         <v-btn
-            class="mb-2"
             color="blue"
             dark
-            @click="sheet = !sheet"
+            @click="data.sheet = !data.sheet"
         >
             Standby
         </v-btn>
-        <v-bottom-sheet v-model="sheet">
+        <v-bottom-sheet v-model="data.sheet">
             <v-sheet
-                height="200px"
+                height="340"
             >
-                <v-data-table
-                    v-model="selected"
-                    :headers="headers"
-                    no-data-text="データがありません。"
-                    class="elevation-1"
-                    single-select
-                    show-select
-                ></v-data-table>
+                <v-card class="pa-2">
+
+                    <v-card-title>
+                        スタンバイ一覧
+                        <v-btn color="primary" @click="chengeToToday">todayに追加</v-btn>
+                    </v-card-title>
+                    <v-data-table
+                        v-model="data.selected"
+                        :headers="headers"
+                        :items="standbys"
+                        item-key="id"
+                        no-data-text="データがありません。"
+                        class="elevation-1"
+                        height="200"
+                    >
+                        <template v-slot:item="{ item }">
+                            <tr :class="data.selected.indexOf(item.id)>-1?'cyan':''" @click="selectStandby(item)">
+                                <td>{{ item.created_by }}</td>
+                                <td>{{ item.title }}</td>
+                            </tr>
+                        </template>
+                    </v-data-table>
+                </v-card>
             </v-sheet>
         </v-bottom-sheet>
+        {{ data.selected }}
+        {{ data.user_id }}
     </div>
 </template>
 
 <script>
-import { defineComponent, reactive } from '@vue/composition-api';
+import { computed, defineComponent, reactive } from '@vue/composition-api';
 import { useStore } from '@/store/index';
+import { Inertia } from '@inertiajs/inertia';
 
 export default defineComponent({
-    setup() {
-        const sotre = useStore();
+    props: {
+        standbys: {
+            type: Array
+        },
+    },
+    setup(props) {
+        const store = useStore();
 
-        const standbys = reactive({})
+        const data = reactive({
+            sheet: false,
+            user_id:  null,
+            selected: [],
+        })
 
-        const selected = reactive({})
+        const selectStandby = (row)=> {
+            // console.log(row.pivot.user_id)
+            toggleSelection(row.id)
+            data.user_id = row.pivot.user_id
+        }
+        const toggleSelection =(taskID)=>{
+            if(data.selected.includes(taskID)) {
+                // console.log('同じ値があります')
+                data.selected = data.selected.filter(
+                    selectedTaskID => selectedTaskID !== taskID
+                );
+            } else {
+                data.selected.push(taskID)
+            }
+        }
+
+
+        const chengeToToday = ()=> {
+            Inertia.visit('/dashboard/chengeToToday', {
+                method: 'post',
+                data: {
+                    user_id: data.user_id,
+                    task_id: data.selected,
+                }
+            })
+        }
 
         return {
-            sheet: false,
-            selected,
-            standbys,
+            data,
+            selectStandby,
+            chengeToToday,
             headers: [
                 {
                     text: '作成者',
@@ -50,6 +101,7 @@ export default defineComponent({
                     text: 'タスク名',
                     value: 'title'
                 },
+
             ]
         }
     },

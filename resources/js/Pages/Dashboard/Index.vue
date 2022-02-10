@@ -11,8 +11,12 @@
                 <v-card
                     min-height="110%"
                 >
-                    <v-card-title v-text="user.last_name"></v-card-title>
-                    <standby-sheet></standby-sheet>
+                    <v-card-title>
+                        {{user.last_name}}
+                        {{ [data.snackbar] }}
+                        <standby-sheet :standbys="user.task_in_standby"></standby-sheet>
+                    </v-card-title>
+
 
                     <v-divider></v-divider>
 
@@ -21,7 +25,7 @@
                         <draggable>
                         <v-card
                             v-for="now in user.task_in_now" :key="now.id"
-                            @click="select(now)"
+                            @click="select(now), selectUser(user)"
                             class="ma-1"
                         >
                             <v-card-text class="pa-1">
@@ -39,7 +43,7 @@
                         <draggable>
                             <v-card
                                 v-for="today in user.task_in_today" :key="today.id"
-                                @click="select(today)"
+                                @click="select(today), selectUser(user)"
                                 class="ma-1"
                             >
                                 <v-card-text class="pa-1">
@@ -54,6 +58,10 @@
             </v-col>
         </v-row>
         <edit-dashboard />
+        <v-snackbar
+            v-model="data.snackbar"
+            dark
+        >{{ sb_message }}</v-snackbar>
 
     </v-container>
 </template>
@@ -81,7 +89,6 @@
         },
         props: {
             auth: { type: Array },
-            users: { type: Array },
             users_tasks: { type: Array },
             projects: { type: Array },
         },
@@ -89,7 +96,27 @@
             console.log(props.users_tasks)
             const store = useStore()
 
+            const data = reactive({
+                snackbar: computed({
+                    get: ()=> store.getters['dashboard/snackbar'],
+                    set: (val)=> store.commit('dashboard/snackbar', val),
+                }),
+                now_task_count: computed({
+                    get: ()=> store.getters['dashboard/now_task_count'],
+                    set: (val)=> store.commit('dashboard/now_task_count', val)
+                }),
+            })
+            //watchで再定義
+            const selectUser = (val)=> {
+                data.now_task_count = val.task_in_now.length
+                // console.log(data.now_task_count)
+                store.commit('dashboard/now_task_count', data.now_task_count)
+                // console.log(val)
+            }
+
             onMounted(()=> {
+                store.commit('dashboard/users_tasks', props.users_tasks)
+
                 window.Echo.private('task-added')
                 .listen('TaskAdded', (e)=> {
                     user.today.push(e)
@@ -97,22 +124,25 @@
                 })
             })
 
+            const test = computed({
+                get: ()=> store.getters['dashboard/users_tasks']
+            })
+            // console.log(test.value)
+
             const drawer = computed({
                 get: () => store.getters['dashboard/edit_drawer'],
                 set: (val) => store.commit('dashboard/edit_drawer_op', val)
             })
 
-            const projects_data = reactive(props.projects)
-
             const select =(val)=> {
                 drawer.value = !drawer.value
-                console.log(val)
-                store.commit('dashboard/title', val.title)
-                store.commit('dashboard/due_date', val.due_date)
+                // console.log(val)
                 store.commit('dashboard/projects', props.projects)
                 store.commit('dashboard/project_id', val.project_id)
-                store.commit('dashboard/task_id', val.id)
+                store.commit('dashboard/title', val.title)
+                store.commit('dashboard/due_date', val.due_date)
                 store.commit('dashboard/select_data', val)
+                store.commit('dashboard/now_task_count', data.now_task_count)
 
                 // console.log(props.projects)
             }
@@ -123,8 +153,12 @@
             }
 
             return {
+                data,
+                sb_message: computed(()=> store.getters['dashboard/snackbar_message']),
                 select,
+                selectUser,
                 logout,
+
             }
         },
     })

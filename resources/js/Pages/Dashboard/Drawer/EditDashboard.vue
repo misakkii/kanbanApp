@@ -27,8 +27,10 @@
                     <v-btn color="primary" @click="update">更新</v-btn>
                     <!-- <v-btn color="red darken-1" dark @click="destroy">削除</v-btn> -->
                     <v-btn color="yellow" @click="assignOff">アサインの解除</v-btn>
-                    <v-btn color="purple" @click="start" dark >nowに移動</v-btn>
-
+                    <v-btn color="purple lighten-1" @click="start" dark >タスクを実行</v-btn>
+                    <v-btn color="purple darken-1" @click="back" dark >タスクを待機</v-btn>
+                    <v-btn color="purple" @click="onClick" dark >snackbar表示</v-btn>
+                    {{now_count}}
 
                 </v-list-item-content>
 
@@ -50,9 +52,18 @@ export default defineComponent({
     setup(props) {
         const store = useStore()
 
+        const onClick =()=> {
+            snackbar.value = true
+        }
+
         const drawer = computed({
             get: () => store.getters['dashboard/edit_drawer'],
             set: (val) => store.commit('dashboard/edit_drawer_op', val)
+        })
+
+        const snackbar = computed({
+            get: ()=> store.getters['dashboard/snackbar'],
+            set: (val)=> store.commit('dashboard/snackbar', val),
         })
 
         const form = reactive({
@@ -74,7 +85,7 @@ export default defineComponent({
         })
 
         const update =()=> {
-            Inertia.visit('/task/update', {
+            Inertia.visit('/dashboard/update', {
                 method: 'post',
                 data: {
                     id: form.task_id,
@@ -100,15 +111,39 @@ export default defineComponent({
                 }
             })
         }
+        const now_count = computed({
+            get: ()=> store.getters['dashboard/now_task_count']
+        })
 
         const start =()=> {
-            Inertia.visit('/start', {
-                method : 'post',
+            // console.log(now_count.value)
+            if(now_count.value >= 1) {
+                let text = "実行できるタスクは1件までです"
+                store.commit('dashboard/snackbar_message', text)
+                snackbar.value = true
+            } else {
+                Inertia.visit('task/execute', {
+                    method : 'post',
+                    data: {
+                        task_id: form.task_id,
+                        user_id: form.user_id,
+                    }
+                })
+                drawer.value = !drawer.value
+                // console.log("実行中のタスクはありません")
+            }
+        }
+
+        //drawerが閉じない時、now_countの値が変わらない
+        const back =()=> {
+            Inertia.visit('task/suspend', {
+                method: 'post',
                 data: {
                     task_id: form.task_id,
                     user_id: form.user_id,
                 }
             })
+            drawer.value = !drawer.value
         }
 
         const destroy = ()=> {
@@ -125,10 +160,13 @@ export default defineComponent({
         return {
             drawer,
             form,
+            now_count,
             update,
             assignOff,
             start,
+            back,
             destroy,
+            onClick,
         }
     },
 })
