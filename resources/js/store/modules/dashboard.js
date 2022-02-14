@@ -5,9 +5,8 @@ const state = {
     snackbar: false,
     snackbar_message: "",
 
-    get: {
-        users_tasks: [],
-    },
+    users_tasks: [],
+
     select_data: {},
     now_task_count: null,
     standbys: {},
@@ -22,7 +21,7 @@ const getters = {
     edit_drawer: state => state.edit_drawer,
     snackbar: state => state.snackbar,
     snackbar_message: state => state.snackbar_message,
-    users_tasks: state => state.get.users_tasks,
+    users_tasks: state => state.users_tasks,
 
     projects: state => state.projects,
     standbys: state => state.standbys,
@@ -44,15 +43,18 @@ const mutations = {
     snackbar_message(state, newMessage) { state.snackbar_message = newMessage },
 
     users_tasks (state, newData) {
-        state.get.users_tasks = newData
+        state.users_tasks = newData
     },
+    t_d_data(state, newValue) {
+        state.users_tasks.push(newValue)
+    },
+
     select_data (state, newSelect) {
         state.select_data = newSelect
     },
     now_task_count (state, newCount) {
         state.now_task_count = newCount
     },
-
     standbys (state, newStandbys) {
         state.standbys = newStandbys
     },

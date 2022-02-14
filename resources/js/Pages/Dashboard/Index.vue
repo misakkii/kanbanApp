@@ -1,9 +1,10 @@
 <template>
     <v-container fluid class="pa-1" >
+        {{ data.users[0].task_in_now }}
         <v-row>
             <!-- ユーザーの件数 -->
             <v-col
-                v-for="user in users_tasks" :key="user.id"
+                v-for="(user, index) in data.users" :key="index"
                 class="pa-1"
                 cols="12"
                 md="3"
@@ -13,30 +14,38 @@
                 >
                     <v-card-title>
                         {{user.last_name}}
-                        {{ [data.snackbar] }}
                         <standby-sheet :standbys="user.task_in_standby"></standby-sheet>
                     </v-card-title>
-
 
                     <v-divider></v-divider>
 
                     <!-- ユーザーがアサインしているNowタスク -->
-                    <v-col cols="12">
-                        <draggable>
-                        <v-card
-                            v-for="now in user.task_in_now" :key="now.id"
-                            @click="select(now), selectUser(user)"
-                            class="ma-1"
-                        >
-                            <v-card-text class="pa-1">
-                                <div v-text="now.project_name">project name</div>
-                                <p class="text-h5 text--primary ma-0" v-text="now.title">title</p>
-                            </v-card-text>
-                        </v-card>
-                        </draggable>
-                    </v-col>
+                    <v-sheet min-height="96">
+                        <v-col cols="12">
+                            <draggable
+                                v-model="user.task_in_now"
+                                draggable=".item"
+                                :group="user.id"
+                                :animation="250"
+                                @add="onAdd"
+                            >
+                                <v-card
+                                    v-for="(now, index) in user.task_in_now" :key="index"
+                                    @click="select(now), selectUser(user)"
+                                    class="item ma-1 h-500"
+                                >
+                                    <v-card-text class="pa-1">
+                                        <div v-text="now.project_name">project name</div>
+                                        <p class="text-h5 text--primary ma-0" v-text="now.title">title</p>
+                                    </v-card-text>
+                                </v-card>
+                            </draggable>
+                        </v-col>
+                    </v-sheet>
+                    {{[ user.now_task_count ]}}
 
                     <v-divider></v-divider>
+
                     <v-tabs grow v-model="user.tab">
                         <v-tab
                             v-for="item in tab_titles" :key="item"
@@ -50,15 +59,26 @@
                             <!-- <v-card flat>
                                 <v-card-text>{{ texts }} {{ user.tab }}</v-card-text>
                             </v-card> -->
+                            <!-- {{texts}} -->
                             <v-col cols="12">
-                                <draggable>
+                                <draggable
+                                    v-model="user.t_d_data[index]"
+                                    draggable=".item"
+                                    :group="user.id"
+                                    :animation="250"
+                                >
                                     <v-card
-                                        v-for="task in texts" :key="task.id"
+                                        v-for="(task, index) in texts" :key="index"
+                                        :ref="texts"
                                         @click="select(task), selectUser(user)"
-                                        class="ma-1"
+                                        class="item ma-1"
                                     >
-                                        <v-card-text class="pa-1">
-                                            <div v-text="task.project_name"></div>
+                                        <v-card-text class="pa-1" >
+                                            <div class="flex justify-between">
+                                                <div>{{ task.project_name }}</div>
+                                                <div>経過時間</div>
+                                            </div>
+
                                             <p class="text-h5 text--primary ma-0" v-text="task.title"></p>
                                         </v-card-text>
                                     </v-card>
@@ -95,7 +115,8 @@
 </template>
 
 <script>
-    import { computed, defineComponent, onMounted, reactive } from '@vue/composition-api'
+    import Vue from 'vue'
+    import { computed, defineComponent, isReactive, onMounted, reactive, watch } from '@vue/composition-api'
     import Layout from '@/Layouts/VuetifyLayout'
     import Welcome from '@/Jetstream/Welcome'
     import EditDashboard from './Drawer/EditDashboard.vue'
@@ -135,6 +156,8 @@
                 }),
                 users: props.users_tasks,
             })
+
+            console.log(isReactive(data.users[0].task_in_now))
             //watchで再定義
             const selectUser = (val)=> {
                 data.now_task_count = val.task_in_now.length
@@ -142,27 +165,6 @@
                 store.commit('dashboard/now_task_count', data.now_task_count)
                 // console.log(val)
             }
-
-            onMounted(()=> {
-                data.users.forEach(arr => {
-                    arr["tab"] = 0
-                    arr["t_d_data"] = [arr.task_in_today, arr.task_in_done]
-                    console.log(arr)
-                });
-                // data.users["status"] = ["today", "done"]
-                store.commit('dashboard/users_tasks', props.users_tasks)
-
-                window.Echo.private('task-added')
-                .listen('TaskAdded', (e)=> {
-                    user.today.push(e)
-                    console.log(e);
-                })
-            })
-
-            const test = computed({
-                get: ()=> store.getters['dashboard/users_tasks']
-            })
-            // console.log(test.value)
 
             const drawer = computed({
                 get: () => store.getters['dashboard/edit_drawer'],
@@ -187,11 +189,71 @@
                 this.$inirtia.get(route('login'));
             }
 
+            const start =()=> {
+                // console.log(now_count.value)
+                if(now_count.value >= 1) {
+                    let text = "実行できるタスクは1件までです"
+                    store.commit('dashboard/snackbar_message', text)
+                    snackbar.value = true
+                } else {
+                    Inertia.visit('task/execute', {
+                        method : 'post',
+                        data: {
+                            task_id: form.task_id,
+                            user_id: form.user_id,
+                        }
+                    })
+                    drawer.value = !drawer.value
+                    // console.log("実行中のタスクはありません")
+                }
+            }
+            const onAdd =(e)=> {
+                console.log("onadd")
+            }
+
+            const group = computed({
+                get: ()=> null,
+                set: (id)=> {
+                    if(id) {
+                        return id
+                    }else{
+                        return null
+                    }
+                }
+            })
+            watch(data.users, ()=> {
+                data.users.forEach(obj => {
+                    obj.now_task_count = obj.task_in_now.length
+                });
+            })
+
+            onMounted(()=> {
+                data.users.forEach(obj => {
+                    Vue.set(obj, "tab", 0)
+                    Vue.set(obj, "t_d_data", [obj.task_in_today, obj.task_in_done])
+                    Vue.set(obj, "now_task_count", obj.task_in_now.length)
+                    // arr["now_task_count"] = arr.task_in_now.length
+                    console.log(obj)
+                });
+                data.users["status"] = ["today", "done"]
+                store.commit('dashboard/users_tasks', props.users_tasks)
+
+                window.Echo.private('task-added')
+                .listen('TaskAdded', (e)=> {
+                    user.today.push(e)
+                    console.log(e);
+                })
+            })
+
             return {
                 data,
+                // task: null,
+
                 sb_message: computed(()=> store.getters['dashboard/snackbar_message']),
                 select,
                 selectUser,
+                onAdd,
+                group,
                 logout,
                 tab_titles: ['Today', 'done'],
                 texts: ['text1', 'text2']
