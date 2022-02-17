@@ -19,6 +19,7 @@ class CreateTaskUserTable extends Migration
             $table->foreignId('task_id')->constrained('tasks')->comment('プロジェクトID');
             $table->integer('order_num')->nullable();
             $table->string('status')->default('standby');
+            $table->integer('total_work_minute')->nullable();
             $table->dateTime('completed_at')->nullable();
             $table->timestamps();
         });

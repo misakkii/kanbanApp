@@ -42,7 +42,7 @@ class DashboardController extends Controller
             'auth' => User::where('id', Auth::id())
                 ->select('id', 'last_name', 'first_name')
                 ->get(),
-            'users_tasks' => $users_tasks,
+            'users_tasks' => fn() => $users_tasks,
             'projects' => fn() => $projects,
         ]);
 
@@ -118,65 +118,146 @@ class DashboardController extends Controller
 
     public function executeTask(Request $request)
     {
+        // dd($request);
+        if(empty($request->user_id)) {
+            return redirect()->route('dashboard', $parameters = [], $status = 303, $headers = []);
+        }
 
-        $task = Task::find($request->task_id);
+        // dd($request);
+        $user = User::find($request->user_id);
 
         $status = 'now';
-        $task->users()->updateExistingPivot($request->user_id, ['status' => $status]);
+        $user->tasks()->updateExistingPivot($request->task_id, ['status' => $status]);
 
-        $find_null = Work_time::where('user_id', $request->user_id)
-            ->where('task_id', $request->task_id)
-            ->latest('created_at')
-            ->first();
         // dd($find_null->suspended_time);
-        if(isset($find_null->suspended_time)) {
-            $new_execute = Work_time::create([
-                'user_id' => $request->user_id,
-                'task_id' => $request->task_id,
-                'executed_time' => Carbon::now(),
-                'use_date' => Carbon::today(),
-            ]);
-            // dd('作成されます');
-        }else{
-            dd('実行が重複しています');
-        }
+        $new_execute = Work_time::create([
+            'user_id' => $request->user_id,
+            'task_id' => $request->task_id,
+            'executed_time' => Carbon::now(),
+            'use_date' => Carbon::today(),
+        ]);
 
         return redirect()->route('dashboard', $parameters = [], $status = 303, $headers = []);
     }
 
     public function suspendTask(Request $request)
     {
-        // dd($request);
-        $task_time = Work_time::where('user_id', $request->user_id)
-            ->where('task_id', $request->task_id)
+        // dd($request->toArray());
+        $task_user = Work_time::where('user_id', $request->user_id)
+            // ->whereNull(['suspended_time'])
             ->latest('created_at')
             ->first();
         // dd($task_time->toArray());
-        $task_time->suspended_time = Carbon::now();
-        $task_time->save();
+        $now = Carbon::now();
 
-        $task_status = Task::find($request->task_id);
+        //タスク待機と同時に秒の差分のデータも算出
+        function time_diff($exe_time, $sus_time)
+        {
+            $deffTime = array();
 
+            //日付データを秒に変換
+            $exeTime = strtotime($exe_time);
+            $susTime = strtotime($sus_time);
+
+            $difSeconds =  $susTime - $exeTime;
+
+            return $difSeconds;
+        }
+        $diff = time_diff($task_user->executed_time, $now);
+        $task_user->suspended_time = $now;
+        $task_user->total_second = $diff;
+        $task_user->save();
+
+        //task_userのtotal_work_minutに合計時間の更新
+        $time_data = Work_time::where('user_id', $request->user_id)
+            ->where('task_id', $task_user->task_id)
+            ->select('total_second')
+            ->get();
+        $total_second = 0;
+        foreach ($time_data as $arr) {
+            $total_second += $arr->total_second;
+        }
+        // dd($total_second);
+        $total_minute = ($total_second - ($total_second % 60)) / 60;
+
+        $task = Task::find($task_user->task_id);
         $status = 'today';
-        $task_status->users()->updateExistingPivot($request->user_id, ['status' => $status]);
+        $task->users()->updateExistingPivot($request->user_id, [
+            'status' => $status,
+            'total_work_minute' => $total_minute,
+        ]);
+
+        return redirect()->route('dashboard', $parameters = [], $status = 303, $headers = []);
+
+        //task_user.total_work_timeにwork_timesの集計時間を60進数で保存
+        $time_data = Work_time::where('user_id', $request->user_id)
+            ->where('task_id', $task_user->task_id)
+            ->select('total_second')
+            ->get();
+        // dd($time_data->toArray());
+        $total_minute = 0;
+        foreach ($time_data as $arr) {
+            $total_minute += $arr->total_second;
+        }
+        dd($total);
+
+        $sum = array_sum($arr);
+        dd($sum);
+
+
+        function time_diff($exe_time, $sus_time)
+        {
+            $deffTime = array();
+
+            //日付データを秒に変換
+            $exeTime = strtotime($exe_time);
+            $susTime = strtotime($sus_time);
+
+            $difSeconds =  $susTime - $exeTime;
+
+            return $difSeconds;
+        }
+
+
+        $difSeconds =  $susTime - $exeTime;
+        $difMinutes = ($difSeconds - ($difSeconds % 60)) / 60;
+        //該当の全データの取得
+        //繰返し構文で①分データに変換
+        //①を全て足す
+
+
+        // $difHours = ($difMinutes - ($difMinutes % 60)) / 60;
+
+        // $diffTime['seconds'] = $difSeconds % 60;
+        // $diffTime['minutes'] = $difMinutes % 60;
+        // $diffTime['hours'] = $difHours;
+        // dd($difMinutes);
+
+        //分データの保存
+        $task_total_time = Task::find($task_user->task_id);
+        $task_total_time->users()->updateExistingPivot($request->user_id, ['total_work_time' => $difMinutes]);
+
 
         return redirect()->route('dashboard', $parameters = [], $status = 303, $headers = []);
     }
 
     public function completeTheTask(Request $request)
     {
+        // dd($request);
         $task_time = Work_time::where('user_id', $request->user_id)
-            ->where('task_id', $request->task_id)
-            ->latest('created_at')
+            ->whereNull(['suspended_time'])
             ->first();
         // dd($task_time->toArray());
-        $task_time->completed_time = Carbon::now();
+
+        $task_time->suspended_time = Carbon::now();
         $task_time->save();
 
-        $task_status = Task::find($request->task_id);
+        $task_status = Task::find($task_time->task_id);
 
         $status = 'done';
         $task_status->users()->updateExistingPivot($request->user_id, ['status' => $status]);
+
+        return redirect()->route('dashboard', $parameters = [], $status = 303, $headers = []);
     }
 
     /**
