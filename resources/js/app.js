@@ -7,11 +7,14 @@ import { App as InertiaApp, plugin as InertiaPlugin } from '@inertiajs/inertia-v
 import PortalVue from 'portal-vue';
 import vuetify from './plugins/vuetify';
 import store from './store'
+import VueCtkDateTimePicker from 'vue-ctk-date-time-picker';
+import 'vue-ctk-date-time-picker/dist/vue-ctk-date-time-picker.css';
 
 Vue.use(VueCompositionApi);
 Vue.mixin({ methods: { route } });
 Vue.use(InertiaPlugin);
 Vue.use(PortalVue);
+Vue.component('VueCtkDateTimePicker', VueCtkDateTimePicker);
 
 const app = document.getElementById('app');
 

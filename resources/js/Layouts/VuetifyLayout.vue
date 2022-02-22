@@ -22,17 +22,23 @@
             <v-divider />
 
             <v-list nav dense>
-                <v-list-item link href="http://localhost/dashboard">
+                <Link as="v-list-item" href="http://localhost/dashboard">
                     <v-list-item-icon>
                         <v-icon>mdi-account-multiple-check</v-icon>
                     </v-list-item-icon>
                     <v-list-item-content>
-                        全体
+                        Dashboard
                     </v-list-item-content>
-                </v-list-item>
-            </v-list>
+                </Link>
+                <Link as="v-list-item" href="http://localhost/detail">
+                    <v-list-item-icon>
+                        <v-icon>mdi-account-check</v-icon>
+                    </v-list-item-icon>
+                    <v-list-item-content>
+                        Detail
+                    </v-list-item-content>
+                </Link>
 
-            <v-list nav dense>
                 <v-list-group
                     no-action
                     v-for="nav_list in data.nav_lists" :key="nav_list.name"
@@ -139,12 +145,12 @@
             const data = reactive({
                 mini: true,
                 nav_lists: [
-                    {
-                        name:"全体",
-                        icon: "mdi-account-multiple-check",
-                        Link: "#"
+                    // {
+                    //     name:"全体",
+                    //     icon: "mdi-account-multiple-check",
+                    //     Link: "/task/dashboard"
 
-                    },
+                    // },
                     {
                         name: "タスク",
                         icon: "mdi-account",

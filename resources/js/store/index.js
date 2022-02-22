@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import { project, task, dashboard, user } from './modules'
+import { project, task, dashboard, detail, user } from './modules'
 import createPersistedState from 'vuex-persistedstate'
 
 Vue.use(Vuex)
@@ -23,6 +23,7 @@ const store = new Vuex.Store({
       project,
       task,
       dashboard,
+      detail,
       user,
     },
     plugins: [

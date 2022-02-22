@@ -1,6 +1,6 @@
 <template>
     <v-container fluid class="pa-1" >
-        {{ data.users[0].task_in_now }}
+        {{ data.users[1].task_in_now }}
         <v-row>
             <!-- ユーザーの件数 -->
             <v-col
@@ -27,22 +27,26 @@
                                 draggable=".item"
                                 :group="user.id"
                                 :animation="250"
-                                @add="onAdd"
+                                @add="onAddNow(user.now_task_count, user.id, user.task_in_now)"
                             >
                                 <v-card
                                     v-for="(now, index) in user.task_in_now" :key="index"
                                     @click="select(now), selectUser(user)"
+                                    :id="now.id"
                                     class="item ma-1 h-500"
                                 >
                                     <v-card-text class="pa-1">
-                                        <div v-text="now.project_name">project name</div>
+                                        <div class="flex justify-between">
+                                            <div>{{ now.project_name }}</div>
+                                            <div>{{ now.pivot.total_hour }}h{{ now.pivot.total_minute }}m</div>
+                                        </div>
                                         <p class="text-h5 text--primary ma-0" v-text="now.title">title</p>
                                     </v-card-text>
                                 </v-card>
                             </draggable>
                         </v-col>
                     </v-sheet>
-                    {{[ user.now_task_count ]}}
+                    <!-- {{[ user.now_task_count ]}} -->
 
                     <v-divider></v-divider>
 
@@ -53,33 +57,58 @@
                     </v-tabs>
 
                     <v-tabs-items v-model="user.tab">
-                        <v-tab-item
-                            v-for="(texts, index) in user.t_d_data" :key="index"
-                        >
+                        <v-tab-item>
                             <!-- <v-card flat>
                                 <v-card-text>{{ texts }} {{ user.tab }}</v-card-text>
                             </v-card> -->
                             <!-- {{texts}} -->
                             <v-col cols="12">
                                 <draggable
-                                    v-model="user.t_d_data[index]"
-                                    draggable=".item"
+                                    v-model="user.task_in_today"
+                                    draggable =".item"
                                     :group="user.id"
                                     :animation="250"
+                                    @add="onAddToday(user.task_in_today, user.id)"
                                 >
                                     <v-card
-                                        v-for="(task, index) in texts" :key="index"
-                                        :ref="texts"
-                                        @click="select(task), selectUser(user)"
-                                        class="item ma-1"
+                                        v-for="(today, index) in user.task_in_today" :key="index"
+                                        @click="select(today), selectUser(user)"
+                                        class="item back ma-1"
                                     >
                                         <v-card-text class="pa-1" >
                                             <div class="flex justify-between">
-                                                <div>{{ task.project_name }}</div>
-                                                <div>経過時間</div>
+                                                <div>{{ today.project_name }}</div>
+                                                <div>{{ today.pivot.total_hour }}h{{ today.pivot.total_minute }}m</div>
                                             </div>
 
-                                            <p class="text-h5 text--primary ma-0" v-text="task.title"></p>
+                                            <p class="text-h5 text--primary ma-0" v-text="today.title"></p>
+                                        </v-card-text>
+                                    </v-card>
+                                </draggable>
+                            </v-col>
+                        </v-tab-item>
+                        <v-tab-item>
+                            <v-col cols="12">
+                                <draggable
+                                    v-model="user.task_in_done"
+                                    draggable =".item"
+                                    :group="user.id"
+                                    :animation="250"
+                                    @add="onAddDone(user.id)"
+                                    :move="()=> false"
+                                >
+                                    <v-card
+                                        v-for="(done, index) in user.task_in_done" :key="index"
+                                        @click="select(done), selectUser(user)"
+                                        class="item back ma-1"
+                                    >
+                                        <v-card-text class="pa-1" >
+                                            <div class="flex justify-between">
+                                                <div>{{ done.project_name }}</div>
+                                                <div>{{ (done.pivot.total_work_minute - (done.pivot.total_work_minute % 60)) / 60 }}h{{ done.pivot.total_work_minute % 60 }}m</div>
+                                            </div>
+
+                                            <p class="text-h5 text--primary ma-0" v-text="done.title"></p>
                                         </v-card-text>
                                     </v-card>
                                 </draggable>
@@ -127,6 +156,8 @@
     import { Link } from '@inertiajs/inertia-vue'
 
 
+
+
     export default defineComponent({
         layout: Layout,
         components: {
@@ -157,7 +188,7 @@
                 users: props.users_tasks,
             })
 
-            console.log(isReactive(data.users[0].task_in_now))
+            // console.log(isReactive(data.users[0].task_in_now))
             //watchで再定義
             const selectUser = (val)=> {
                 data.now_task_count = val.task_in_now.length
@@ -189,12 +220,12 @@
                 this.$inirtia.get(route('login'));
             }
 
-            const start =()=> {
+            const start =(count,)=> {
                 // console.log(now_count.value)
-                if(now_count.value >= 1) {
+                if(count >= 1) {
                     let text = "実行できるタスクは1件までです"
                     store.commit('dashboard/snackbar_message', text)
-                    snackbar.value = true
+                    data.snackbar.value = true
                 } else {
                     Inertia.visit('task/execute', {
                         method : 'post',
@@ -207,14 +238,73 @@
                     // console.log("実行中のタスクはありません")
                 }
             }
-            const onAdd =(e)=> {
-                console.log("onadd")
+
+            const onAddNow =(count, user_id, now)=> {
+                // now.forEach(arr => {
+                //     console.log(arr.pivot.task_id)
+                //     arr.pivot.task_id
+
+                //     Inertia.visit('task/execute', {
+                //         method: 'post',
+                //         data: {
+                //             user_id: user_id,
+                //             task_id: arr.pivot.task_id,
+                //         }
+                //     })
+                // })
+                // console.log(now)
+                // console.log(user_id)
+
+                if(count > 1) {
+                    data.snackbar = !data.snackbar
+                    Inertia.visit('task/execute', {
+                        method: 'post',
+                        data: {}
+                    })
+                } else {
+                    now.forEach(arr => {
+                        console.log(arr.pivot.task_id)
+                        arr.pivot.task_id
+
+                        Inertia.visit('task/execute', {
+                            method: 'post',
+                            data: {
+                                user_id: user_id,
+                                task_id: arr.pivot.task_id,
+                            }
+                        })
+                    })
+                }
+                // console.log(e.item)
+            }
+
+            const onAddToday =(today, user_id)=> {
+                console.log(today)
+                today.forEach(arr => {
+                    console.log(arr)
+                    Inertia.visit('task/suspend', {
+                        method: 'post',
+                        data: {
+                            user_id: user_id,
+                        }
+                    })
+                })
+            }
+            const onAddDone =(user_id)=> {
+                console.log('タスクが完了しました')
+                Inertia.visit('task/complete', {
+                    method: 'post',
+                    data: {
+                        user_id: user_id,
+                    }
+                })
             }
 
             const group = computed({
                 get: ()=> null,
                 set: (id)=> {
                     if(id) {
+                        console.log()
                         return id
                     }else{
                         return null
@@ -230,7 +320,6 @@
             onMounted(()=> {
                 data.users.forEach(obj => {
                     Vue.set(obj, "tab", 0)
-                    Vue.set(obj, "t_d_data", [obj.task_in_today, obj.task_in_done])
                     Vue.set(obj, "now_task_count", obj.task_in_now.length)
                     // arr["now_task_count"] = arr.task_in_now.length
                     console.log(obj)
@@ -238,11 +327,11 @@
                 data.users["status"] = ["today", "done"]
                 store.commit('dashboard/users_tasks', props.users_tasks)
 
-                window.Echo.private('task-added')
-                .listen('TaskAdded', (e)=> {
-                    user.today.push(e)
-                    console.log(e);
-                })
+                // window.Echo.private('task-added')
+                // .listen('TaskAdded', (e)=> {
+                //     user.today.push(e)
+                //     console.log(e);
+                // })
             })
 
             return {
@@ -252,11 +341,12 @@
                 sb_message: computed(()=> store.getters['dashboard/snackbar_message']),
                 select,
                 selectUser,
-                onAdd,
+                onAddNow,
+                onAddToday,
+                onAddDone,
                 group,
                 logout,
                 tab_titles: ['Today', 'done'],
-                texts: ['text1', 'text2']
             }
         },
     })

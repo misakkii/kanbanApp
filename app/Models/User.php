@@ -65,8 +65,13 @@ class User extends Authenticatable
     public function tasks()
     {
         return $this->belongsToMany(Task::class)
-            ->withPivot('order_num', 'status', 'total_work_minute', 'completed_at')
-            // ->where('status', 'today')
+            ->withPivot(
+                'order_num',
+                'status',
+                'total_work_minute',
+                'total_hour',
+                'total_minute',
+                'completed_at')
             ->withTimestamps();
     }
 
@@ -74,7 +79,15 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Task::class, 'task_user', 'user_id', 'task_id')
             ->joinProject()
-            ->withPivot('order_num', 'status', 'total_work_minute', 'completed_at')
+            ->withPivot(
+                'order_num',
+                'status',
+                'total_work_minute',
+                'total_hour',
+                'total_minute',
+                'completed_at'
+            )
+            ->whereNull('task_user.deleted_at')
             ->where('status', 'today')
             ->withTimestamps();
     }
@@ -83,7 +96,15 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Task::class, 'task_user', 'user_id', 'task_id')
             ->joinProject()
-            ->withPivot('order_num', 'status', 'total_work_minute', 'completed_at')
+            ->withPivot(
+                'order_num',
+                'status',
+                'total_work_minute',
+                'total_hour',
+                'total_minute',
+                'completed_at'
+            )
+            ->whereNull('task_user.deleted_at')
             ->where('status', 'now');
     }
 
@@ -92,6 +113,7 @@ class User extends Authenticatable
         return $this->belongsToMany(Task::class, 'task_user', 'user_id', 'task_id')
             ->joinProject()
             ->withPivot('order_num', 'status', 'total_work_minute', 'completed_at')
+            ->whereNull('task_user.deleted_at')
             ->where('status', 'standby');
     }
 
@@ -99,7 +121,15 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Task::class, 'task_user', 'user_id', 'task_id')
             ->joinProject()
-            ->withPivot('order_num', 'status', 'total_work_minute', 'completed_at')
+            ->withPivot(
+                'order_num',
+                'status',
+                'total_work_minute',
+                'total_hour',
+                'total_minute',
+                'completed_at'
+            )
+            ->whereNull('task_user.deleted_at')
             ->where('status', 'done');
     }
 

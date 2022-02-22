@@ -111,7 +111,7 @@ class DashboardController extends Controller
         $task = Task::find($request->task_id);
 
         //削除したいuser_idの設定（複数）
-        $task->users()->detach($request->user_id);
+        $task->users()->updateExistingPivot($request->user_id, ['deleted_at' => Carbon::now()]);
 
         return redirect()->route('dashboard', $parameters = [], $status = 303, $headers = []);
     }
@@ -143,48 +143,75 @@ class DashboardController extends Controller
     public function suspendTask(Request $request)
     {
         // dd($request->toArray());
-        $task_user = Work_time::where('user_id', $request->user_id)
-            // ->whereNull(['suspended_time'])
+        $work_time = Work_time::where('user_id', $request->user_id)
             ->latest('created_at')
             ->first();
         // dd($task_time->toArray());
         $now = Carbon::now();
 
         //タスク待機と同時に秒の差分のデータも算出
-        function time_diff($exe_time, $sus_time)
+        function timeDiff($exe_time, $sus_time)
         {
-            $deffTime = array();
+            $diff_time = array();
 
             //日付データを秒に変換
             $exeTime = strtotime($exe_time);
             $susTime = strtotime($sus_time);
 
-            $difSeconds =  $susTime - $exeTime;
+            $dif_seconds =  $susTime - $exeTime;
 
-            return $difSeconds;
+            $dif_minutes = ($dif_seconds - ($dif_seconds % 60)) / 60;
+            $dif_hours = ($dif_minutes - ($dif_minutes % 60)) / 60;
+
+            // $diffTime['seconds'] = $dif_seconds % 60;
+            $diff_time['minutes'] = $dif_minutes % 60;
+            $diff_time['hours'] = $dif_hours;
+
+            return $diff_time;
         }
-        $diff = time_diff($task_user->executed_time, $now);
-        $task_user->suspended_time = $now;
-        $task_user->total_second = $diff;
-        $task_user->save();
+
+        $diff = timeDiff($work_time->executed_time, $now);
+        $work_time->suspended_time = $now;
+        $work_time->minute = $diff['minutes'] ;
+        $work_time->hour = $diff['hours'];
+        $work_time->save();
 
         //task_userのtotal_work_minutに合計時間の更新
         $time_data = Work_time::where('user_id', $request->user_id)
-            ->where('task_id', $task_user->task_id)
-            ->select('total_second')
+            ->where('task_id', $work_time->task_id)
+            ->select('minute', 'hour')
             ->get();
-        $total_second = 0;
-        foreach ($time_data as $arr) {
-            $total_second += $arr->total_second;
+        $sum_hour_to_minute = 0;
+        $sum_minute = 0;
+        foreach($time_data as $arr) {
+            $sum_hour_to_minute += ($arr->hour * 60);
         }
-        // dd($total_second);
-        $total_minute = ($total_second - ($total_second % 60)) / 60;
+        foreach ($time_data as $arr) {
+            $sum_minute += $arr->minute;
+        }
+        $total_minute = ($sum_hour_to_minute + $sum_minute);
+        function totalDiff($total_minute)
+        {
+            $diff_time = array();
 
-        $task = Task::find($task_user->task_id);
+            $total_hours = ($total_minute - ($total_minute % 60)) / 60;
+
+            $diff_time['minutes'] = $total_minute % 60;
+            $diff_time['hours'] = $total_hours;
+
+            return $diff_time;
+        }
+        // dd($total_minute);
+        // $total_minute = ($total_second - ($total_second % 60)) / 60;
+
+        $task = Task::find($work_time->task_id);
         $status = 'today';
+        $toatl = totalDiff($total_minute);
         $task->users()->updateExistingPivot($request->user_id, [
             'status' => $status,
             'total_work_minute' => $total_minute,
+            'total_minute' => $toatl['minutes'],
+            'total_hour' => $toatl['hours'],
         ]);
 
         return redirect()->route('dashboard', $parameters = [], $status = 303, $headers = []);
@@ -201,9 +228,15 @@ class DashboardController extends Controller
         }
         dd($total);
 
-        $sum = array_sum($arr);
-        dd($sum);
-
+        //一度分に直す
+        foreach($time_data as $arr) {
+            $hour_chenge_minute += ($arr->hour * 60);
+        }
+        foreach ($time_data as $arr) {
+            $total_minute += $arr->minute;
+        }
+        //このデータを再計算してtask_userに保存
+        $munute = $hour_chenge_minute + $total_minute;
 
         function time_diff($exe_time, $sus_time)
         {
@@ -244,18 +277,21 @@ class DashboardController extends Controller
     public function completeTheTask(Request $request)
     {
         // dd($request);
-        $task_time = Work_time::where('user_id', $request->user_id)
-            ->whereNull(['suspended_time'])
+        $work_time = Work_time::where('user_id', $request->user_id)
+            ->latest('created_at')
             ->first();
         // dd($task_time->toArray());
 
-        $task_time->suspended_time = Carbon::now();
-        $task_time->save();
+        $work_time->suspended_time = Carbon::now();
+        $work_time->save();
 
-        $task_status = Task::find($task_time->task_id);
+        $task_status = Task::find($work_time->task_id);
 
         $status = 'done';
-        $task_status->users()->updateExistingPivot($request->user_id, ['status' => $status]);
+        $task_status->users()->updateExistingPivot($request->user_id, [
+            'status' => $status,
+            'completed_at' => Carbon::now(),
+        ]);
 
         return redirect()->route('dashboard', $parameters = [], $status = 303, $headers = []);
     }

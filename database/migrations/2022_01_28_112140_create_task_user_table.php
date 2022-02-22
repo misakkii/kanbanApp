@@ -20,7 +20,10 @@ class CreateTaskUserTable extends Migration
             $table->integer('order_num')->nullable();
             $table->string('status')->default('standby');
             $table->integer('total_work_minute')->nullable();
+            $table->integer('total_hour')->default(0);
+            $table->integer('total_minute')->default(0);
             $table->dateTime('completed_at')->nullable();
+            $table->dateTime('deleted_at')->nullable();
             $table->timestamps();
         });
     }

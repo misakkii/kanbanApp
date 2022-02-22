@@ -5,7 +5,7 @@
             dark
             @click="data.sheet = !data.sheet"
         >
-            Standby
+            waiting
         </v-btn>
         <v-bottom-sheet v-model="data.sheet">
             <v-sheet

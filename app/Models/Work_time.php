@@ -14,7 +14,9 @@ class Work_time extends Model
         'task_id',
         'executed_time',
         'suspend_time',
-        'completed_time',
+        'total_second',
+        'hour',
+        'minute',
         'use_date',
         'deleted_at',
 
