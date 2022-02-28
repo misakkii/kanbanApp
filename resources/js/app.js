@@ -9,8 +9,11 @@ import vuetify from './plugins/vuetify';
 import store from './store'
 import VueCtkDateTimePicker from 'vue-ctk-date-time-picker';
 import 'vue-ctk-date-time-picker/dist/vue-ctk-date-time-picker.css';
+import axios from 'axios';
+import VueAxios from 'vue-axios';
 
 Vue.use(VueCompositionApi);
+Vue.use(VueAxios, axios);
 Vue.mixin({ methods: { route } });
 Vue.use(InertiaPlugin);
 Vue.use(PortalVue);

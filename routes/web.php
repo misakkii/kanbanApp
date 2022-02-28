@@ -42,11 +42,14 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function() {
 
     //ダッシュボード
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
     Route::post('/dashboard/update', [DashboardController::class, 'update']);
     Route::post('/dashboard/chengeToToday', [DashboardController::class, 'chengeToToday']);
 
     //詳細
     Route::get('/detail', [DetailController::Class, 'index'])->name('detail');
+    Route::put('/detail/{time}', [DetailController::Class, 'update'])->name('detail.update');
+    Route::get('/detail/{id}/edit', [DetailController::class, 'edit']);
 
     //プロジェクト
     Route::get('/project/list', [ProjectController::class, 'index'])->name('project.index');

@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use Illuminate\Http\Request;
 use Inertia\Middleware;
+use App\Models\User;
 
 class HandleInertiaRequests extends Middleware
 {
@@ -29,6 +30,7 @@ class HandleInertiaRequests extends Middleware
 
     /**
      * Defines the props that are shared by default.
+     * デフォルトで共有される小道具を定義します。
      *
      * @see https://inertiajs.com/shared-data
      * @param  \Illuminate\Http\Request  $request
@@ -37,7 +39,34 @@ class HandleInertiaRequests extends Middleware
     public function share(Request $request)
     {
         return array_merge(parent::share($request), [
-            //
+            'auth' => function() use($request) {
+                return [
+                    'user' => $request->user() ? [
+                        'id' => $request->user()->id,
+                        'first_name' => $request->user()->first_name,
+                        'last_name' => $request->user()->last_name,
+                    ] : null,
+                    // 'tasks' => $request->user() ? [
+                    //     'now' => User::with('taskInNow')->find($request->user()->id),
+                    //     'today' => User::with('taskInToday')->find($request->user()->id),
+                    //     'done' => null,
+                    // ] : null,
+                ];
+            },
+            // 'task_in_user' => User::with(
+            //     'taskInToday',
+            //     'taskInNow',
+            //     'taskInStandby',
+            //     'taskInDone',
+            // )
+            // ->select('id', 'last_name', 'first_name')
+            // ->find($request->user()->id),
+            'flash' => function() use($request) {
+                return [
+                    'success' => $request->session()->get('success'),
+                    'error' => $request->session()->get('error'),
+                ];
+            }
         ]);
     }
 }

@@ -161,22 +161,46 @@ class TaskController extends Controller
      * @param  \App\Models\Task  $task
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Task $task)
+    public function update(Request $request)
     {
         $input = $request->all();
         // dd($input);
 
-        $validator = Validator::make($input, [
-            'project_id' => 'required',
-            'title' => 'required | string',
-            'due_date' => 'nullable | date',
-        ])->validateWithBag('taskUpdate');
+        // 分割して処理（使い回すため）
+        $vd_project_id = Validator::make($input, ['project_id' => 'required']);
+        $vd_title = Validator::make($input, ['title' => 'required | string']);
+        $vd_due_date = Validator::make($input, ['due_date' => 'nullable | date']);
 
-        $task = Task::where('id', $request->id)->update([
-            'project_id' => $validator['project_id'],
-            'title' => $validator['title'],
-            'due_date' => $validator['due_date'],
-        ]);
+        if($vd_project_id->fails() || $vd_title->fails() || $vd_due_date->fails()) {
+            return response()->json([
+                $vd_project_id->errors(),
+                $vd_title->errors(),
+                $vd_due_date->errors(),
+            ], 400);
+        }
+        // dd($vd_title->fails());
+
+        $task = Task::find($input->id);
+
+        $task->update(['project_id' => $input->project_id]);
+        $task->update(['title' => $input->title]);
+        $task->update(['due_date' => $input->due_date]);
+
+        // $items = [];
+        // if($updated_project_id) {
+        //     $item[] = ['プロジェクト名'];
+        // }
+        // if($updated_titile) {
+        //     $item[] = ['タスク名'];
+        // }
+        // if($updated_due_date) {
+        //     $item[] = ['タスク期限'];
+        // }
+        // foreach($items as $item) {
+        //     return $item;
+        // }
+        // $message = $item."を変更しました。";
+        return response()->json(['message' => '変更完了']);
 
         return redirect()->route('task.index', $parameters = [], $status = 303, $headers = []);
     }

@@ -11,6 +11,7 @@ use App\Models\{
     User,
     Task,
 };
+use Validator;
 
 
 class DetailController extends Controller
@@ -22,18 +23,22 @@ class DetailController extends Controller
      */
     public function index()
     {
-        $work_times = Work_time::where('user_id', Auth::id())->get();
+        // $work_times = Work_time::where('user_id', Auth::id())->get();
         // dd($work_times->toArray());
 
-        $task_user = User::with('tasks')
-            // ->select('tasks')
+        $task_in_user = User::with(
+            'taskInToday',
+            'taskInNow',
+            'taskInStandby',
+            'taskInDone',
+        )
+            ->select('id', 'last_name', 'first_name')
             ->find(Auth::id());
-        dd($task_user->toArray());
-
+        // dd($task_in_user->toArray());
 
         return Inertia::render('Detail/Index', [
-            'work_times' => fn() => $work_times,
-            'task_user' => fn() => $task_user,
+            // 'work_times' => fn() => $work_times,
+            'task_in_user' => fn() => $task_in_user,
         ]);
     }
 
@@ -75,9 +80,17 @@ class DetailController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(Work_time $work_time)
     {
-        //
+        return Inertia::render('Detail/Components/EditDataTable', [
+            'work_time' => [
+                'id' => $work_time->id,
+                'user_id' => $work_time->user_id,
+                'task_id' => $work_time->task_id,
+                'executed_time' => $work_time->executed_time,
+                'suspended_time' => $work_time->suspended_time,
+            ]
+        ]);
     }
 
     /**
@@ -87,9 +100,29 @@ class DetailController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Time $time)
     {
-        //
+        $time->update();
+
+
+
+
+        // dd($time);
+
+        // $vd_executed_time = Validator::make($input, [
+        //     'executed_time' => 'require | date'
+        // ]);
+        // $vd_suspended_time = Validator::make($input, [
+        //     'suspended_time' => 'require | date'
+        // ]);
+
+        // $work_times = Work_time::find($id);
+
+        // $work_times->update(['executed_time' => $vd_executed_time['executed_time']]);
+        // $work_times->update(['suspended_time' => $vd_suspended_time['suspended_time']]);
+
+        // return redirect()->route('detail', $parameters = [], $status = 303, $headers = []);
+
     }
 
     /**

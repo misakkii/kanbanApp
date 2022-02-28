@@ -36,6 +36,7 @@
     import { computed, defineComponent, reactive } from '@vue/composition-api'
     import Layout from '@/Layouts/VuetifyLayout.vue'
     import AddTask from'@/Pages/Task/Drawer/AddTask.vue'
+    import ValidateReset from '../functions/ValidateReset'
     import { useStore } from '@/store/index'
 
 export default defineComponent({
@@ -53,6 +54,7 @@ export default defineComponent({
     ],
     setup(props) {
         const store = useStore()
+        const {Reset} = ValidateReset()
 
         //データ系
         const data = reactive({
@@ -82,6 +84,7 @@ export default defineComponent({
 
         const edit = (task)=> {
             edit_drawer.value = !edit_drawer.value
+            Reset()
             store.commit('task/id', task.id)
             store.commit('task/project_id', task.project_id)
             store.commit('task/title', task.title)

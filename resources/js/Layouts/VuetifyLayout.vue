@@ -122,11 +122,16 @@
             </v-container>
         </v-main>
 
+        <v-snackbar
+            v-model="data.snackbar"
+        ></v-snackbar>
+
     </v-app>
 </template>
 
 <script>
-    import { defineComponent, reactive } from '@vue/composition-api'
+    import { computed, defineComponent, reactive } from '@vue/composition-api'
+    import { useStore } from '@/store/index'
     import Welcome from '@/Jetstream/Welcome'
     import AddProject from '../Pages/Project/Drawers/AddProject.vue'
     import EditProject from '../Pages/Project/Drawers/EditProject.vue'
@@ -142,8 +147,13 @@
             EditTask,
         },
         setup() {
+            const store = useStore();
             const data = reactive({
                 mini: true,
+                snackbar: computed({
+                    get: ()=> store.getters['snackbar'],
+                    set: (val)=> store.commit('snackbar', val)
+                }),
                 nav_lists: [
                     // {
                     //     name:"全体",

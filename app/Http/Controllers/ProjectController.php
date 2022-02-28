@@ -111,15 +111,22 @@ class ProjectController extends Controller
         // $task = Task::find($input->id());
 
         // dd($input);
-        Validator::make($input, [
-            'project_name' => 'required | string',
-            'due_date' => 'nullable | date',
-        ])->validateWithBag('projectUpdate');
+        // Validator::make($input, [
+        //     'project_name' => 'required | string',
+        //     'due_date' => 'nullable | date',
+        // ])->validateWithBag('projectUpdate');
 
-        $project = Project::where('id', $request->id)->update([
-            'project_name' => $request->project_name,
-            'due_date' => $request->due_date,
-        ]);
+        $vd_project_name = Validator::make($input, [
+            'project_name' => 'required | string',
+        ])->validateWithBag('project_name_update');
+        $vd_due_date = Validator::make($input, [
+            'due_date' => 'nullable | date',
+        ])->validateWithBag('due_date_update');
+
+        $project = Project::find($request->id);
+
+        $project->update(['project_name' => $vd_project_name['project_name']]);
+        $project->update(['due_date' => $vd_due_date['due_date']]);
 
         // $project = Project::find($input->id);
         // $project->tasks()->save(['project_name' => $input->project_name]);

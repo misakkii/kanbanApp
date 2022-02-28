@@ -26,8 +26,8 @@ class DashboardController extends Controller
     public function index(Request $request)
     {
         $users_tasks = User::with(
-            'taskInToday',
             'taskInNow',
+            'taskInToday',
             'taskInStandby',
             'taskInDone',
         )
