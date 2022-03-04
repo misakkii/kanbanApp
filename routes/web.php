@@ -50,6 +50,7 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function() {
     Route::get('/detail', [DetailController::Class, 'index'])->name('detail');
     Route::put('/detail/{time}', [DetailController::Class, 'update'])->name('detail.update');
     Route::get('/detail/{id}/edit', [DetailController::class, 'edit']);
+    Route::post('/detail/show', [DetailController::class, 'show']);
 
     //プロジェクト
     Route::get('/project/list', [ProjectController::class, 'index'])->name('project.index');

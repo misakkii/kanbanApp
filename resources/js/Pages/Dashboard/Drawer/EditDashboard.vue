@@ -31,6 +31,7 @@
                     <v-btn color="purple darken-1" @click="back" dark >タスクを待機</v-btn>
                     <v-btn color="purple darken-2" @click="complete" dark >タスクを完了</v-btn>
                     <v-btn color="purple" @click="onClick" dark >snackbar表示</v-btn>
+                    <v-btn color="purple" @click="onTest" dark >test</v-btn>
                     {{now_count}}
 
                 </v-list-item-content>
@@ -171,6 +172,10 @@ export default defineComponent({
             })
         }
 
+        const onTest =()=> {
+            Inertia.reload({ only: ['users_tasks'] })
+        }
+
         return {
             drawer,
             form,
@@ -182,6 +187,7 @@ export default defineComponent({
             complete,
             destroy,
             onClick,
+            onTest,
         }
     },
 })

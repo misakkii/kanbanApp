@@ -2,6 +2,9 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\{
+    DetailController,
+};
 
 /*
 |--------------------------------------------------------------------------
@@ -18,6 +21,10 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-// Route::get('/dashboard', function() {
-
+Route::middleware(['auth:sanctum'])->group(function() {
+    Route::post('get/work-time', [DetailController::Class, 'workTimesIndex']);
+    Route::post('work-time/{id}/destroy', [DetailController::Class, 'destroy']);
+});
+// Route::get('/user', function(Request $request) {
+//     return $request->user();
 // });

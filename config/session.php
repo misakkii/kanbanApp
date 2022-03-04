@@ -152,6 +152,10 @@ return [
     | Here you may change the domain of the cookie used to identify a session
     | in your application. This will determine which domains the cookie is
     | available to in your application. A sensible default has been set.
+     ここで、セッションの識別に使用されるCookieのドメインを変更できます
+    | アプリケーションで。 これにより、Cookieがどのドメインであるかが決まります
+    | アプリケーションで利用できます。 賢明なデフォルトが設定されています。
+
     |
     */
 

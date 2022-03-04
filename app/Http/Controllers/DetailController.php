@@ -12,6 +12,8 @@ use App\Models\{
     Task,
 };
 use Validator;
+use Carbon\Carbon;
+
 
 
 class DetailController extends Controller
@@ -21,9 +23,12 @@ class DetailController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        // $work_times = Work_time::where('user_id', Auth::id())->get();
+        //2回目以降のページ読み込み時＄$requestで欲しい値を取得する
+        $work_times = Work_time::where('user_id', Auth::id())
+        // ->where('task_id',)
+        ->get();
         // dd($work_times->toArray());
 
         $task_in_user = User::with(
@@ -31,14 +36,45 @@ class DetailController extends Controller
             'taskInNow',
             'taskInStandby',
             'taskInDone',
-        )
-            ->select('id', 'last_name', 'first_name')
+        )->select('id', 'last_name', 'first_name')
             ->find(Auth::id());
         // dd($task_in_user->toArray());
 
+        $today = array($task_in_user->taskInToday->toArray());
+        $now[0]['show'] = true;
+        // $flag = $now + array('show' => true);
+        // $now_sum_flag = array_merge($now, $flag);
+        // dd($now);
+
+        //フラグの追加
+        $today_in_flag = array();
+        foreach ($today[0] as $arr) {
+            $data = array($arr);
+            foreach ($data as $arr) {
+                $arr['show'] = false;
+                array_push($today_in_flag, $arr);
+            }
+        }
+
+        // dd($today_in_flag);
+        // dd($task_in_user->taskInToday->toArray());
+
         return Inertia::render('Detail/Index', [
-            // 'work_times' => fn() => $work_times,
+            // 'work_times' => Inertia::lazy(fn () => $work_times),
             'task_in_user' => fn() => $task_in_user,
+            'today' => fn() => $today_in_flag,
+        ]);
+    }
+
+    public function workTimesIndex(Request $request)
+    {
+        $work_times = Work_time::where('user_id', $request->user_id)
+            ->where('task_id', $request->task_id)
+            ->whereNull('deleted_at')
+            ->get();
+
+        return response()->json([
+            'work_times' => $work_times,
         ]);
     }
 
@@ -69,9 +105,13 @@ class DetailController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Request $request)
     {
-        //
+        $work_times = Work_time::where('user_id', Auth::id())
+        // ->where('task_id',)
+        ->get();
+
+        return redirect()->back()->with('work_times', $work_times);
     }
 
     /**
@@ -133,6 +173,12 @@ class DetailController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $work_time = Work_time::find($id);
+
+        $work_time->deleted_at = Carbon::now();
+        $work_time->save();
+
+        $message = $id.'を削除しました';
+        return response()->json(['message' => $message]);
     }
 }

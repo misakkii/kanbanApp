@@ -13,7 +13,7 @@
                     <v-select
                         v-model="edit.project_id"
                         label="プロジェクト名"
-                        :items="edit.projects"
+                        :items="[edit.projects]"
                         item-text="project_name"
                         item-value="id"
                         :error="validate.project_id.error"

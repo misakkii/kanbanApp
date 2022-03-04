@@ -1,11 +1,11 @@
 const state = {
-    drawer: false
+    show: false
 }
 const getters = {
-    drawer: state => state.drawer
+    show: state => state.show
 }
 const mutations = {
-    edit_drawer(state, newValue){ state.drawer = newValue },
+    show(state, newValue){ state.show = newValue },
 }
 const actions = {}
 

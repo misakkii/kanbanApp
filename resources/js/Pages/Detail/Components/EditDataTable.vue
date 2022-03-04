@@ -36,7 +36,7 @@ export default defineComponent({
         }
     },
     setup(props) {
-        console.log(props.work_time);
+        // console.log(props.work_time);
         const update =()=> {
             // form.data.put(`/detail/${}`)
         }

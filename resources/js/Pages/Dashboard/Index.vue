@@ -68,7 +68,7 @@
                                     draggable =".item"
                                     :group="user.id"
                                     :animation="250"
-                                    @add="onAddToday(user.task_in_today, user.id)"
+                                    @add="onAddToday(user.id)"
                                 >
                                     <v-card
                                         v-for="(today, index) in user.task_in_today" :key="index"
@@ -173,7 +173,7 @@
             projects: { type: Array },
         },
         setup(props) {
-            console.log(props.users_tasks)
+            // console.log(props.users_tasks)
             const store = useStore()
 
             const data = reactive({
@@ -254,6 +254,14 @@
                 // })
                 // console.log(now)
                 // console.log(user_id)
+                Inertia.visit('api/user', {
+                    method: 'get',
+                    data: {
+                        user_id
+                    }
+                }).then(res => {
+                    console.log(res);
+                })
 
                 if(count > 1) {
                     data.snackbar = !data.snackbar
@@ -263,7 +271,7 @@
                     })
                 } else {
                     now.forEach(arr => {
-                        console.log(arr.pivot.task_id)
+                        // console.log(arr.pivot.task_id)
                         arr.pivot.task_id
 
                         Inertia.visit('task/execute', {
@@ -278,16 +286,12 @@
                 // console.log(e.item)
             }
 
-            const onAddToday =(today, user_id)=> {
-                console.log(today)
-                today.forEach(arr => {
-                    console.log(arr)
-                    Inertia.visit('task/suspend', {
-                        method: 'post',
-                        data: {
-                            user_id: user_id,
-                        }
-                    })
+            const onAddToday =(user_id)=> {
+                Inertia.visit('task/suspend', {
+                    method: 'post',
+                    data: {
+                        user_id: user_id,
+                    },
                 })
             }
             const onAddDone =(user_id)=> {
@@ -322,7 +326,7 @@
                     Vue.set(obj, "tab", 0)
                     Vue.set(obj, "now_task_count", obj.task_in_now.length)
                     // arr["now_task_count"] = arr.task_in_now.length
-                    console.log(obj)
+                    // console.log(obj)
                 });
                 data.users["status"] = ["today", "done"]
                 store.commit('dashboard/users_tasks', props.users_tasks)
@@ -337,7 +341,6 @@
             return {
                 data,
                 // task: null,
-
                 sb_message: computed(()=> store.getters['dashboard/snackbar_message']),
                 select,
                 selectUser,

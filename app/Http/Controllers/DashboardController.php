@@ -44,6 +44,7 @@ class DashboardController extends Controller
                 ->get(),
             'users_tasks' => fn() => $users_tasks,
             'projects' => fn() => $projects,
+            // 'test' => Inertia::lazy(fn ()=> '非同期通信のテスト')
         ]);
 
     }

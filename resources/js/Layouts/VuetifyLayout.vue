@@ -137,6 +137,8 @@
     import EditProject from '../Pages/Project/Drawers/EditProject.vue'
     import EditTask from'@/Pages/Task/Drawer/EditTask.vue'
     import { Link } from '@inertiajs/inertia-vue'
+    import { Inertia } from '@inertiajs/inertia'
+
 
     export default defineComponent({
         components: {
@@ -148,6 +150,7 @@
         },
         setup() {
             const store = useStore();
+
             const data = reactive({
                 mini: true,
                 snackbar: computed({

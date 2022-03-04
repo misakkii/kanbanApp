@@ -21,6 +21,7 @@
         "laravel-echo": "^1.11.3",
         "laravel-mix": "^6.0.6",
         "lodash": "^4.17.19",
+        "moment": "^2.29.1",
         "portal-vue": "^2.1.7",
         "postcss": "^8.1.14",
         "postcss-import": "^12.0.1",
