@@ -1,19 +1,22 @@
 <template>
 <div>
     <v-dialog
-        v-model="dialog_edit"
+        v-model="data.dialog_edit"
         max-width="500px"
         persistent
     >
         <template v-slot:activator="{ on, attrs }">
-            <v-text-field
-                v-model="dialog.prop_time"
-                :label="prop_label_name"
-                readonly
-                clearable
-                v-bind="attrs"
-                v-on="on"
-            ></v-text-field>
+            <v-form>
+                <v-text-field
+                    v-model="dialog.prop_time"
+                    :label="$props.label_name"
+                    readonly
+                    clearable
+                    :rules="timeRules"
+                    v-bind="attrs"
+                    v-on="on"
+                ></v-text-field>
+            </v-form>
         </template>
         <VueCtkDateTimePicker
             v-model="dialog.prop_time"
@@ -27,21 +30,21 @@
                     <v-btn
                         block
                         @click="cancel"
-                    >諦める</v-btn>
+                    >cancel</v-btn>
                 </v-col>
 
                 <v-col cols="12" md="4" class="pa-0">
                     <v-btn
                         block
                         @click="restore"
-                    >I'll be back</v-btn>
+                    >back</v-btn>
                 </v-col>
 
                 <v-col cols="12" md="4" class="pa-0">
                     <v-btn
                         block
-                        @click="save(time)"
-                    >保存してみる</v-btn>
+                        @click="save(dialog.prop_time)"
+                    >保存</v-btn>
                 </v-col>
             </v-row>
         </v-container>
@@ -59,17 +62,21 @@ export default defineComponent({
         },
         time_data: {
             type: String
+        },
+        difference: {
+            type: Number
         }
     },
     setup(props, { emit }) {
+        console.log(props.difference);
         const data = reactive({
             time: null,
             dialog_edit: false,
         })
 
         const dialog = reactive({
-            prop_label_name: props.label_name,
             prop_time: props.time_data,
+            prop_difference: props.difference,
             // penを押した時のデフォルトの値
             default: {
                 time: props.time_data,
@@ -79,13 +86,20 @@ export default defineComponent({
                 tiem: null,
             }
         })
-        const time = toRef(dialog, 'prop_time')
-        const dialog_edit = toRef(data, 'dialog_edit')
-        const prop_label_name = toRef(dialog, 'prop_label_name')
+
+        const timeRules = reactive([
+            v => !!v || '時間の入力は必須です',
+            // dialog.prop_difference > 28800000 || '開始時間と終了時間が8時間以内になるよう入力してください。',
+            // v => {
+            //     if(v === 1) {
+            //         v > 28800000 || '開始時間と終了時間が8時間以内になるよう入力してください。'
+            //     } else if (v === -1) {}
+            // }
+        ])
 
         const save =()=> {
             data.dialog_edit = false
-            emit('time_edited', time.value)
+            emit('time_edited', dialog.prop_time)
         }
 
         const restore =()=> {
@@ -97,18 +111,17 @@ export default defineComponent({
             data.dialog_edit = false
             emit('restore', dialog.default.time)
             dialog.prop_time = dialog.default.time
-            // console.log(time.value);
         }
         watch(props, ()=> {
             dialog.prop_time = props.time_data
+            dialog.prop_difference = props.difference
             // console.log('時間を更新しました');
         })
 
         return {
-            time,
-            prop_label_name,
-            dialog_edit,
+            data,
             dialog,
+            timeRules,
             save,
             restore,
             cancel,

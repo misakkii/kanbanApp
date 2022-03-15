@@ -158,6 +158,8 @@ return [
         'first_name' => '名前',
         'email' => 'メールアドレス',
         'password' => 'パスワード',
+        'excuted_time' => '開始時間',
+        'suspended_time' => '終了時間',
     ],
 
 ];

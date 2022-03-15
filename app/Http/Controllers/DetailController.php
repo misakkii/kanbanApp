@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 
 use Illuminate\Http\Request;
@@ -11,7 +12,6 @@ use App\Models\{
     User,
     Task,
 };
-use Validator;
 use Carbon\Carbon;
 
 
@@ -140,12 +140,27 @@ class DetailController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Time $time)
+    public function update(Request $request)
     {
-        $time->update();
+        $work_time = Work_time::find($request->id);
 
+        $validator = Validator::make($request->all(), [
+            'excuted_time' => 'required | date | before:suspended_time',
+            'suspended_time' => 'required | date | after:excuted_time',
+        ]);
 
+        if($validator->fails()) {
+            return response()->json($validator->errors(), 200);
+        }
 
+        // $work_time->executed_time = $request->excuted_time;
+        // $work_time->suspended_time = $request->suspended_time;
+        // $work_time->save();
+
+        return response()->json([
+            'request' => $request->all(),
+            'work_time' => $work_time,
+        ]);
 
         // dd($time);
 

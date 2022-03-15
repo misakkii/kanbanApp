@@ -9,7 +9,6 @@
             >
                 <v-card>
                     <v-card-title>{{index}}</v-card-title>
-                    {{status}}
 
                     <v-sheet min-height="96">
                         <v-col cols="12">
@@ -28,7 +27,7 @@
 
 <script>
 import Vue from 'vue'
-import { computed, defineComponent, isReactive, onMounted, reactive, watch } from '@vue/composition-api'
+import { computed, defineComponent, isReactive, onMounted, reactive } from '@vue/composition-api'
 import draggable from 'vuedraggable'
 import Layout from '@/Layouts/VuetifyLayout'
 import { Inertia } from '@inertiajs/inertia'
@@ -52,8 +51,6 @@ export default defineComponent({
         task_in_user: { type: Object },
     },
     setup(props) {
-        // console.log(props.task_in_user);
-        // console.log((props.today));
         const store = useStore();
 
         const data = reactive({

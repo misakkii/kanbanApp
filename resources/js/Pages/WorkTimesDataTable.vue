@@ -26,19 +26,9 @@
                 </td>
             </tr>
         </template>
-        <!-- <template v-slot:item.actions="{ item }">
-            <v-icon
-                small
-                class="mr-2"
-                @click="editItem(item)"
-            >mdi-pencil</v-icon>
-            <v-icon
-                small
-                @click="deleteItem(item)"
-            >mdi-delete</v-icon>
-        </template> -->
     </v-data-table>
 </template>
+
 
 <script>
 import { defineComponent, reactive, toRef, watch } from '@vue/composition-api'
@@ -67,6 +57,7 @@ export default defineComponent({
             emit('dialog', dialog)
             // console.log(item);
         }
+
         const deleteItem =(item)=> {
             console.log(item);
             let exe = confirm('削除しますか？')
@@ -79,7 +70,6 @@ export default defineComponent({
                     console.log(err.data);
                 })
             }
-
         }
 
         watch(props, ()=> {
