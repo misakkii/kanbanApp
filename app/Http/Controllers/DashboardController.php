@@ -207,11 +207,11 @@ class DashboardController extends Controller
 
         $task = Task::find($work_time->task_id);
         $status = 'today';
-        $toatl = totalDiff($total_minute);
+        $total = totalDiff($total_minute);
         $task->users()->updateExistingPivot($request->user_id, [
             'status' => $status,
             'total_work_minute' => $total_minute,
-            'total_minute' => $toatl['minutes'],
+            'total_minute' => $total['minutes'],
             'total_hour' => $toatl['hours'],
         ]);
 
@@ -252,13 +252,11 @@ class DashboardController extends Controller
             return $difSeconds;
         }
 
-
         $difSeconds =  $susTime - $exeTime;
         $difMinutes = ($difSeconds - ($difSeconds % 60)) / 60;
         //該当の全データの取得
         //繰返し構文で①分データに変換
         //①を全て足す
-
 
         // $difHours = ($difMinutes - ($difMinutes % 60)) / 60;
 

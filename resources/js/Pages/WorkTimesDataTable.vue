@@ -63,7 +63,11 @@ export default defineComponent({
             let exe = confirm('削除しますか？')
             if(exe) {
                 console.log('削除を実行');
-                axios.post(`/api/work-time/${item.id}/destroy`)
+                axios.post('/api/work-time/destroy', {
+                    task_id: item.task_id,
+                    user_id: item.user_id,
+                    work_time_id: item.id
+                })
                 .then(res => {
                     console.log(res.data);
                 }).catch(err => {

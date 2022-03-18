@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 
 use Illuminate\Http\Request;
+use App\Http\Traits\TimeDiffTrait;
 use Inertia\Inertia;
 use App\Models\{
     Work_time,
@@ -18,6 +19,7 @@ use Carbon\Carbon;
 
 class DetailController extends Controller
 {
+    use TimeDiffTrait;
     /**
      * Display a listing of the resource.
      *
@@ -142,42 +144,51 @@ class DetailController extends Controller
      */
     public function update(Request $request)
     {
-        $work_time = Work_time::find($request->id);
+        $work_time = Work_time::find($request->work_time_id);
+
+        //差分が8時間以内になるようにバリデーション
+        // $exe_time = strtotime($request->executed_time);
+        // $sus_time = strtotime($request->suspended_time);
+        // $diff = $sus_time - $exe_time;
 
         $validator = Validator::make($request->all(), [
-            'excuted_time' => 'required | date | before:suspended_time',
-            'suspended_time' => 'required | date | after:excuted_time',
+            'executed_time' => 'required | date | before:suspended_time',
+            'suspended_time' => 'required | date | after:executed_time',
         ]);
 
         if($validator->fails()) {
-            return response()->json($validator->errors(), 200);
+            return response()->json($validator->errors());
         }
+        // if($diff > 28800) {
+        //     return response()->json([
+        //         'err_msg' => "差分が8時間以内になるように入力してください"
+        //     ]);
+        // }
 
-        // $work_time->executed_time = $request->excuted_time;
-        // $work_time->suspended_time = $request->suspended_time;
-        // $work_time->save();
+        $diff = $this->timeDiff($request->executed_time, $request->suspended_time);
 
-        return response()->json([
-            'request' => $request->all(),
-            'work_time' => $work_time,
+        $work_time->hour = $diff['hours'];
+        $work_time->minute = $diff['minutes'];
+        $work_time->executed_time = $request->executed_time;
+        $work_time->suspended_time = $request->suspended_time;
+        $work_time->save();
+
+        $total_minute = $this->sumAllTimeDiff($request->task_id);
+        $total = $this->totalDiff($total_minute);
+
+        $task = Task::find($request->task_id)->users()->updateExistingPivot($request->user_id, [
+            'total_work_minute' => $total_minute,
+            'status' => 'today',
+            'total_hour' => $total['hours'],
+            'total_minute' => $total['minutes'],
         ]);
 
-        // dd($time);
-
-        // $vd_executed_time = Validator::make($input, [
-        //     'executed_time' => 'require | date'
-        // ]);
-        // $vd_suspended_time = Validator::make($input, [
-        //     'suspended_time' => 'require | date'
-        // ]);
-
-        // $work_times = Work_time::find($id);
-
-        // $work_times->update(['executed_time' => $vd_executed_time['executed_time']]);
-        // $work_times->update(['suspended_time' => $vd_suspended_time['suspended_time']]);
-
-        // return redirect()->route('detail', $parameters = [], $status = 303, $headers = []);
-
+        return response()->json([
+            'success' => true,
+            'request' => $request->all(),
+            'work_time' => $work_time,
+            'val' => $diff,
+        ]);
     }
 
     /**
@@ -186,14 +197,23 @@ class DetailController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Request $request)
     {
-        $work_time = Work_time::find($id);
+        $work_time = Work_time::find($request->work_time_id);
 
         $work_time->deleted_at = Carbon::now();
         $work_time->save();
 
-        $message = $id.'を削除しました';
+        $total_minute = $this->sumAllTimeDiff($request->task_id);
+        $total = $this->totalDiff($total_minute);
+
+        $task = Task::find($request->task_id)->users()->updateExistingPivot($request->user_id, [
+            'total_work_minute' => $total_minute,
+            'total_hour' => $total['hours'],
+            'total_minute' => $total['minutes'],
+        ]);
+
+        $message = $request->user_id.'を削除しました';
         return response()->json(['message' => $message]);
     }
 }

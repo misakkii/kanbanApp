@@ -3,7 +3,6 @@
     <v-container>
         <template>
                 <v-data-table
-
                     :headers="headers"
                     :items="tasks"
                     @click:row="edit"

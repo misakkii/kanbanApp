@@ -9,10 +9,9 @@
             <v-form>
                 <v-text-field
                     v-model="dialog.prop_time"
-                    :label="$props.label_name"
                     readonly
                     clearable
-                    :rules="timeRules"
+
                     v-bind="attrs"
                     v-on="on"
                 ></v-text-field>
@@ -56,30 +55,18 @@
 import { defineComponent, reactive, toRef, watch } from '@vue/composition-api'
 
 export default defineComponent({
-    props: {
-        label_name: {
-            type: String
-        },
-        time_data: {
-            type: String
-        },
-        difference: {
-            type: Number
-        }
-    },
+    props: {},
     setup(props, { emit }) {
-        console.log(props.difference);
         const data = reactive({
             time: null,
             dialog_edit: false,
         })
 
         const dialog = reactive({
-            prop_time: props.time_data,
-            prop_difference: props.difference,
+            prop_time: null,
             // penを押した時のデフォルトの値
             default: {
-                time: props.time_data,
+                time: null,
             },
             // ピッカーで「OK」を押したときに反映
             edit: {
@@ -89,12 +76,6 @@ export default defineComponent({
 
         const timeRules = reactive([
             v => !!v || '時間の入力は必須です',
-            // dialog.prop_difference > 28800000 || '開始時間と終了時間が8時間以内になるよう入力してください。',
-            // v => {
-            //     if(v === 1) {
-            //         v > 28800000 || '開始時間と終了時間が8時間以内になるよう入力してください。'
-            //     } else if (v === -1) {}
-            // }
         ])
 
         const save =()=> {
@@ -113,8 +94,7 @@ export default defineComponent({
             dialog.prop_time = dialog.default.time
         }
         watch(props, ()=> {
-            dialog.prop_time = props.time_data
-            dialog.prop_difference = props.difference
+            dialog.prop_time = null
             // console.log('時間を更新しました');
         })
 

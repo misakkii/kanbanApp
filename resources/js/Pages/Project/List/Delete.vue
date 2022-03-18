@@ -48,7 +48,7 @@ export default defineComponent({
         const edit =(item)=>{
             edit_drawer.value = !edit_drawer.value
             store.commit('project/id', item.id)
-            store.commit('project/title', item.title)
+            store.commit('project/project_name', item.project_name)
             store.commit('project/due_date', item.due_date)
             console.log(item)
         }
@@ -59,7 +59,7 @@ export default defineComponent({
             headers: [
                 {
                     text: 'プロジェクト名',
-                    value: 'title'
+                    value: 'project_name'
                 },
                 {
                     text: '締め切り期日',

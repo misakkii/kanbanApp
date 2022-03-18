@@ -23,9 +23,9 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::middleware(['auth:sanctum'])->group(function() {
     Route::post('get/work-time', [DetailController::Class, 'workTimesIndex']);
-    Route::post('work-time/{id}/destroy', [DetailController::Class, 'destroy']);
 
-    Route::post('detail/update', [DetailController::Class, 'update']);
+    Route::post('work-time/update', [DetailController::Class, 'update']);
+    Route::post('work-time/destroy', [DetailController::Class, 'destroy']);
 
 });
 // Route::get('/user', function(Request $request) {

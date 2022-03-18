@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Project;
 use Inertia\Inertia;
+use Carbon\Carbon;
 use Validator;
 
 class ProjectController extends Controller
@@ -146,7 +147,9 @@ class ProjectController extends Controller
      */
     public function destroy(Request $request)
     {
-        $project = Project::destroy($request->id);
+        $project = Project::find($request->id);
+        $project->deleted_at = Carbon::now();
+        $project->save();
         // $project = Project::where('id', $request->id)->delete();
 
         return redirect()->route('project.index', $parameters = [], $status = 303, $headers = []);
