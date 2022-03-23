@@ -167,24 +167,23 @@ class TaskController extends Controller
         // dd($input);
 
         // 分割して処理（使い回すため）
-        $vd_project_id = Validator::make($input, ['project_id' => 'required']);
-        $vd_title = Validator::make($input, ['title' => 'required | string']);
-        $vd_due_date = Validator::make($input, ['due_date' => 'nullable | date']);
+        // $vd_project_id = Validator::make($input, ['project_id' => 'required']);
+        // $vd_title = Validator::make($input, ['title' => 'required | string']);
+        // $vd_due_date = Validator::make($input, ['due_date' => 'nullable | date']);
 
-        if($vd_project_id->fails() || $vd_title->fails() || $vd_due_date->fails()) {
-            return response()->json([
-                $vd_project_id->errors(),
-                $vd_title->errors(),
-                $vd_due_date->errors(),
-            ], 400);
-        }
-        // dd($vd_title->fails());
+        // if($vd_project_id->fails() || $vd_title->fails() || $vd_due_date->fails()) {
+        //     return response()->json([
+        //         $vd_project_id->errors(),
+        //         $vd_title->errors(),
+        //         $vd_due_date->errors(),
+        //     ], 400);
+        // }
 
-        $task = Task::find($input->id);
+        // $task = Task::find($input->id);
 
-        $task->update(['project_id' => $input->project_id]);
-        $task->update(['title' => $input->title]);
-        $task->update(['due_date' => $input->due_date]);
+        // $task->update(['project_id' => $input->project_id]);
+        // $task->update(['title' => $input->title]);
+        // $task->update(['due_date' => $input->due_date]);
 
         // $items = [];
         // if($updated_project_id) {

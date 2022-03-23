@@ -69,7 +69,7 @@
         <!-- right -->
         <add-project />
         <edit-project />
-        <edit-task />
+        <!-- <edit-task /> -->
 
         <v-app-bar
             app
@@ -138,7 +138,6 @@
     import EditTask from'@/Pages/Task/Drawer/EditTask.vue'
     import { Link } from '@inertiajs/inertia-vue'
     import { Inertia } from '@inertiajs/inertia'
-
 
     export default defineComponent({
         components: {

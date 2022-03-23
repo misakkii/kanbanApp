@@ -212,7 +212,7 @@ class DashboardController extends Controller
             'status' => $status,
             'total_work_minute' => $total_minute,
             'total_minute' => $total['minutes'],
-            'total_hour' => $toatl['hours'],
+            'total_hour' => $total['hours'],
         ]);
 
         return redirect()->route('dashboard', $parameters = [], $status = 303, $headers = []);

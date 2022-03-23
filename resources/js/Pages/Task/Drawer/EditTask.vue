@@ -8,8 +8,7 @@
         <v-list>
             <v-list-item>
                 <v-list-item-content>
-                    <v-list-item-title>
-                        タスクの変更
+                    <v-list-item-title>タスクの変更</v-list-item-title>
                     <v-select
                         v-model="edit.project_id"
                         label="プロジェクト名"
@@ -19,7 +18,7 @@
                         :error="validate.project_id.error"
                         :error-messages="validate.project_id.message"
                     ></v-select>
-                    </v-list-item-title>
+
                     <v-text-field
                         label="タスク名"
                         v-model="edit.title"
@@ -58,12 +57,17 @@ export default defineComponent({
     components: {
         DatePicker,
     },
+    props: {
+        task_data: {
+            type: String
+        }
+    },
     setup() {
         const store = useStore()
         const {Reset} = ValidateReset()
 
         const edit = reactive({
-            id : computed({
+            id: computed({
                 get: ()=> store.getters['task/id'],
                 set: (val)=> store.commit('task/id', val)
             }),

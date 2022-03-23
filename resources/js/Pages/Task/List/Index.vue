@@ -2,32 +2,35 @@
 <div>
     <v-container>
         <template>
-                <v-data-table
-                    :headers="headers"
-                    :items="tasks"
-                    @click:row="edit"
-                    class="elevation-1"
-                    locale="ja-jp"
-                    loading-text="読込中"
-                    no-data-text="データがありません。"
-                >
-                    <template v-slot:top>
-                        <v-toolbar flat>
-                            <v-toolbar-title>タスク一覧</v-toolbar-title>
+            <v-data-table
+                :headers="headers"
+                :items="tasks"
+                @click:row="edit"
+                class="elevation-1"
+                locale="ja-jp"
+                loading-text="読込中"
+                no-data-text="データがありません。"
+            >
+                <template v-slot:top>
+                    <v-toolbar flat>
+                        <v-toolbar-title>タスク一覧</v-toolbar-title>
 
-                            <v-spacer></v-spacer>
+                        <v-spacer></v-spacer>
 
-                            <v-btn @click="add_drawer = !add_drawer" color="primary">New Task</v-btn>
-                        </v-toolbar>
-                    </template>
-                </v-data-table>
-            </template>
+                        <v-btn @click="add_drawer = !add_drawer" color="primary">New Task</v-btn>
+                    </v-toolbar>
+                </template>
+            </v-data-table>
+        </template>
     </v-container>
     <add-task
         :auth="auth"
         :users="users"
         :projects="projects"
     />
+    <edit-task
+        :task_data="data.task"
+    ></edit-task>
 </div>
 </template>
 
@@ -38,10 +41,14 @@
     import ValidateReset from '../functions/ValidateReset'
     import { useStore } from '@/store/index'
 
+    import EditTask from'@/Pages/Task/Drawer/EditTask.vue'
+
+
 export default defineComponent({
     layout: Layout,
     components: {
-        AddTask
+        AddTask,
+        EditTask,
     },
     props: [
         //一覧データ
@@ -61,6 +68,7 @@ export default defineComponent({
                 get: ()=> store.getters['task/projects'],
                 set: (val)=> store.commit('task/projects', val),
             }),
+            task: 'test data'
         })
         data.projects = props.projects
 
@@ -88,7 +96,8 @@ export default defineComponent({
             store.commit('task/project_id', task.project_id)
             store.commit('task/title', task.title)
             store.commit('task/due_date', task.due_date)
-            console.log(task)
+            // console.log(task)
+            // axios.post('api/task/update', {})
         }
 
         return {

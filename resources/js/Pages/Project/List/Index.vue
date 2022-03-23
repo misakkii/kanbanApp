@@ -2,7 +2,6 @@
     <v-container>
         <template>
                 <v-data-table
-
                     :headers="headers"
                     :items="items"
                     @click:row="edit"
