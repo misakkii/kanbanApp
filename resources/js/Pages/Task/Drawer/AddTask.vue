@@ -46,7 +46,7 @@
 
 <script>
 import { computed, defineComponent, reactive } from '@vue/composition-api'
-import DatePicker from '@/components/DatePicker.vue'
+import DatePicker from '@/Components/DatePicker.vue'
 import { useStore } from '@/store/index'
 import { Inertia } from '@inertiajs/inertia'
 
