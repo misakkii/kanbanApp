@@ -22,7 +22,7 @@
             <v-divider />
 
             <v-list nav dense>
-                <Link as="v-list-item" href="http://localhost/dashboard">
+                <Link as="v-list-item" href="/dashboard">
                     <v-list-item-icon>
                         <v-icon>mdi-account-multiple-check</v-icon>
                     </v-list-item-icon>
@@ -30,7 +30,7 @@
                         Dashboard
                     </v-list-item-content>
                 </Link>
-                <Link as="v-list-item" href="http://localhost/detail">
+                <Link as="v-list-item" href="/detail">
                     <v-list-item-icon>
                         <v-icon>mdi-account-check</v-icon>
                     </v-list-item-icon>
